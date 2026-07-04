@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --lime: #8AE25A;
+  --lime-dark: #5FBF2A;
+  --lime-muted: #CCEFAF;
+  --lime-glow: rgba(138, 226, 90, 0.35);
+  
+  --canvas-bg: #FFFFFF;
+  --panel-bg: #8AE25A;
+  --panel-dark: #2C2C2C;
+  
+  --ink: #111111;
+  --ink-muted: #555555;
+  
+  --red-close: #FF5F57;
+  --yellow-min: #FFBD2E;
+  --green-max: #28CA41;
+}
+
+.dark {
+  --canvas-bg: #1A1A1A;
+  --panel-dark: #2C2C2C;
+  
+  --ink: #FFFFFF;
+  --ink-muted: #A0A0A0;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: transparent; /* For frameless native window */
+  font-family: 'Inter', sans-serif;
+  color: var(--ink);
+  user-select: none; /* Disable text selection for app-like feel */
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Drop zone breathing animation */
+@keyframes breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+/* Window enter animation */
+@keyframes windowEnter {
+  0% { opacity: 0; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Layers slide down */
+@keyframes slideDown {
+  0% { opacity: 0; max-height: 0; }
+  100% { opacity: 1; max-height: 200px; }
+}
+
+/* Logo sparkle pulse */
+@keyframes sparklePulse {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(138,226,90,0)); }
+  50% { filter: drop-shadow(0 0 8px rgba(138,226,90,0.8)); }
+}
+.animate-sparkle {
+  animation: sparklePulse 400ms ease-out;
+}
+
+/* Shortcuts bar slide up */
+@keyframes slideUp {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-up {
+  animation: slideUp 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
