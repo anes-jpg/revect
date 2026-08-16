@@ -28,10 +28,16 @@
   --ink-muted: #A0A0A0;
 }
 
-body {
+html, body, #root {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  background-color: transparent; /* For frameless native window */
+  background: transparent; /* For frameless transparent native window */
+}
+
+body {
   font-family: 'Inter', sans-serif;
   color: var(--ink);
   user-select: none; /* Disable text selection for app-like feel */
@@ -95,7 +101,7 @@ body {
 /* ===== Boot screen ===== */
 .boot-screen {
   position: fixed;
-  inset: 24px; /* matches WindowFrame's p-6 padding + rounded window */
+  inset: 8px; /* matches WindowFrame's m-2 margin around the content */
   border-radius: 24px;
   background: #ffffff;
   z-index: 999;
