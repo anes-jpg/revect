@@ -111,11 +111,11 @@ export function WindowFrame({
 
   return (
     <div
-      className="w-screen h-screen flex items-center justify-center bg-lime"
+      className="w-screen h-screen bg-lime relative"
       data-tauri-drag-region
     >
       <div
-        className="m-2 w-full h-full rounded-[24px] flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] bg-white"
+        className="absolute inset-2 rounded-[24px] flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] bg-white"
         style={{ animation: 'windowEnter 500ms cubic-bezier(0.34, 1.56, 0.64, 1)' }}
       >
         {/* Main content area */}
