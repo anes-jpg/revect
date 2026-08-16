@@ -4,10 +4,23 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { CanvasPanel } from './components/CanvasPanel';
 import { PreferencesModal } from './components/PreferencesModal';
 import { PathEditor } from './components/PathEditor';
+import { BootScreen } from './components/BootScreen';
 import { settingsReducer, defaultSettings } from './hooks/useSettings';
 import { useTranslation } from './i18n';
 import { useToast } from './hooks/useToast';
 import { useSvgHistory } from './hooks/useSvgHistory';
+
+// True when a keyboard event originates from a text-editing target, so global
+// shortcuts (undo/redo, pan, zoom) don't hijack typing.
+function isTypingTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target.tagName === 'INPUT' ||
+    target.tagName === 'TEXTAREA' ||
+    target.tagName === 'SELECT' ||
+    target.isContentEditable
+  );
+}
 
 function App() {
   const { t } = useTranslation();
@@ -22,8 +35,8 @@ function App() {
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedPathId, setSelectedPathId] = useState<string | null>(null);
-  const [selectedPathEl, setSelectedPathEl] = useState<SVGPathElement | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [isBooting, setIsBooting] = useState(true);
 
   const workerRef = useRef<Worker | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -239,14 +252,15 @@ function App() {
   }, [svgHistory]);
 
   // Path selection
-  const handleSelectPath = useCallback((id: string | null, el?: SVGPathElement | null) => {
+  const handleSelectPath = useCallback((id: string | null) => {
     setSelectedPathId(id);
-    setSelectedPathEl(el || null);
   }, []);
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      // Don't hijack shortcuts while the user is typing in an input.
+      if (isTypingTarget(e.target)) return;
       if (e.ctrlKey && e.shiftKey && e.key === 'Z') {
         e.preventDefault();
         const svg = svgHistory.redo();
@@ -282,7 +296,7 @@ function App() {
       onCopySvg={handleCopySvg}
       svgOutput={svgOutput}
       selectedPathId={selectedPathId}
-      onSelectPath={(id: string) => handleSelectPath(id, null)}
+      onSelectPath={(id: string) => handleSelectPath(id)}
       onSvgEdit={handleSvgEdit}
       showShortcuts={showShortcuts}
       onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
@@ -291,6 +305,8 @@ function App() {
 
   return (
     <WindowFrame rightPanel={rightPanel} showShortcuts={showShortcuts}>
+      {isBooting && <BootScreen onFinished={() => setIsBooting(false)} />}
+
       <input
         type="file"
         ref={fileInputRef}
@@ -334,7 +350,6 @@ function App() {
           {selectedPathId && svgOutput && (
             <PathEditor
               pathId={selectedPathId}
-              pathEl={selectedPathEl}
               svgOutput={svgOutput}
               onSvgEdit={handleSvgEdit}
               onClose={() => handleSelectPath(null)}

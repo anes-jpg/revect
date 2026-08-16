@@ -26,9 +26,14 @@ export function CanvasPanel({ originalImage, svgOutput, isTracing, onSelectPath,
   const panOffsetRef = useRef({ x: 0, y: 0 });
   const isDraggingSplit = useRef(false);
 
+  const handleFit = () => { setZoom(1); setPan({ x: 0, y: 0 }); };
+
   // Keyboard listeners for space-to-pan
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't hijack shortcuts while the user is typing in an input.
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) return;
       if (e.code === 'Space' && !e.repeat) {
         e.preventDefault();
         setSpaceHeld(true);
@@ -63,7 +68,6 @@ export function CanvasPanel({ originalImage, svgOutput, isTracing, onSelectPath,
 
   const handleZoomIn = () => setZoom(prev => Math.min(10, prev * 1.25));
   const handleZoomOut = () => setZoom(prev => Math.max(0.1, prev / 1.25));
-  const handleFit = () => { setZoom(1); setPan({ x: 0, y: 0 }); };
   const handleRotate = () => setRotation(prev => (prev + 90) % 360);
 
   // Pan handlers

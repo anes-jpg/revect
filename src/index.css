@@ -91,3 +91,110 @@ body {
 .animate-slide-up {
   animation: slideUp 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
+/* ===== Boot screen ===== */
+.boot-screen {
+  position: fixed;
+  inset: 24px; /* matches WindowFrame's p-6 padding + rounded window */
+  border-radius: 24px;
+  background: #ffffff;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  opacity: 1;
+  transition: opacity 450ms ease-out, transform 450ms ease-out;
+}
+.boot-screen--exit {
+  opacity: 0;
+  transform: scale(1.05);
+}
+
+.boot-tile {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  border-radius: 20px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(17, 17, 17, 0.12);
+  animation: boot-tile-in 550ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes boot-tile-in {
+  0% { opacity: 0; transform: scale(0.7) rotate(-4deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Lime border sweeping around the tile */
+.boot-tile__border {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--lime);
+  border-radius: 20px;
+  clip-path: inset(0 100% 0 0);
+  animation: boot-border 700ms 250ms ease-out forwards;
+}
+@keyframes boot-border {
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* Rising patterned fill (the "paint bucket" sweep) */
+.boot-tile__fill {
+  position: absolute;
+  inset: 0;
+  background-color: var(--lime);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(17, 17, 17, 0.09) 0 7px, transparent 7px 14px);
+  transform: translateY(101%);
+  animation: boot-fill 850ms 600ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+@keyframes boot-fill {
+  to { transform: translateY(0); }
+}
+
+/* R logo popping in over the fill */
+.boot-tile__logo {
+  position: absolute;
+  inset: 14px;
+  color: var(--ink);
+  opacity: 0;
+  animation: boot-logo 350ms 1150ms ease-out forwards;
+}
+@keyframes boot-logo {
+  from { opacity: 0; transform: scale(0.86); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Wordmark */
+.boot-wordmark {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em; /* optical centering for the letter spacing */
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(8px);
+  animation: boot-wordmark 450ms 1400ms ease-out forwards;
+}
+@keyframes boot-wordmark {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-screen,
+  .boot-screen--exit {
+    transition: none;
+  }
+  .boot-tile,
+  .boot-tile__border,
+  .boot-tile__fill,
+  .boot-tile__logo,
+  .boot-wordmark {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

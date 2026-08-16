@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# Revect
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fast, friendly raster-to-vector image tracer for the desktop — drop in a PNG, JPG, WEBP or GIF and get an editable vector outline you can tune, tweak, and export as SVG.
 
-Currently, two official plugins are available:
+Built with [Tauri](https://tauri.app) (Rust + WebView2) and React, powered by [VTracer](https://github.com/visioncortex/vtracer) running in a Web Worker with WASM.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Drag-and-drop tracing** — drop an image and get vectors instantly with live preview
+- **Tracing presets** — B&W, Photo, and Poster, plus fine-grained controls (color precision, speckle filter, corner threshold, gradient step, spline settings, path precision)
+- **Color modes** — full color or black & white (with threshold), stacked or cutout layering
+- **Tracing modes** — pixel, polygon, and spline output
+- **Vector editing** — select paths on the canvas to move, resize (from any corner, anchored at center), recolor, adjust opacity, duplicate, delete, or toggle layer visibility
+- **Undo / redo** — full history (Ctrl+Z / Ctrl+Shift+Z), with keyboard shortcuts that never hijack typing in inputs
+- **Canvas tools** — zoom, pan (space or middle mouse), fit, rotate view, and split/original/vector comparison views
+- **Exports** — SVG download, PNG export at 1×/2×/4× scale, or copy the SVG source
+- **Polished shell** — custom frameless window with working minimize/maximize/fullscreen/close controls, branded app icon, and a boot animation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Development
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev        # vite dev server only
+npm run tauri dev  # full desktop app (debug build)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Building
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run tauri build
 ```
+
+The release bundle (installer + executable) lands in `src-tauri/target/release/bundle/`.
+
+## Project layout
+
+```
+src/                React frontend
+  components/       canvas, path editor, layers, settings, window chrome, boot screen
+  hooks/            settings, history (undo/redo), toasts, preferences
+  worker/           VTracer WASM tracing worker
+src-tauri/          Rust shell, capabilities, icons
+```
+
+## Tech notes
+
+- Tracing runs off the UI thread in a Web Worker (WASM), with stale-result guarding so out-of-order traces are discarded.
+- SVG paths are tracked with stable `data-revect-id` attributes injected at parse time; the parser skips paths that already carry an id so serialized edits round-trip safely.
+- All pointer-drag math converts screen deltas through the SVG screen CTM, so moving and scaling stay pixel-exact at any zoom or rotation.

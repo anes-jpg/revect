@@ -1,33 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Trash2, Copy, Palette, X } from 'lucide-react';
+import { resolvePathInDoc } from './svgMath';
 
 interface PathEditorProps {
   pathId: string;
-  pathEl: SVGPathElement | null;
   svgOutput: string;
   onSvgEdit: (newSvg: string) => void;
   onClose: () => void;
   onToast: (message: string, type?: 'success' | 'warning' | 'error') => void;
 }
 
-export function PathEditor({ pathId, pathEl, svgOutput, onSvgEdit, onClose, onToast }: PathEditorProps) {
-  const [fill, setFill] = useState('#000000');
-  const [opacity, setOpacity] = useState(100);
-  const [pointCount, setPointCount] = useState(0);
+export function PathEditor({ pathId, svgOutput, onSvgEdit, onClose, onToast }: PathEditorProps) {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // Enter animation: flip the panel in on the frame after mount.
     requestAnimationFrame(() => setVisible(true));
   }, []);
 
-  useEffect(() => {
-    if (!pathEl) return;
-    setFill(pathEl.getAttribute('fill') || '#000000');
-    setOpacity(Math.round(parseFloat(pathEl.getAttribute('opacity') || '1') * 100));
-    const d = pathEl.getAttribute('d') || '';
-    setPointCount((d.match(/[MLHVCSQTAZ]/gi) || []).length);
-  }, [pathEl]);
+  // Read the path's current attributes from the SVG string itself (pathEl is
+  // not threaded through from the canvas). Fresh trace output has no
+  // data-revect-id, so resolvePathInDoc falls back to document order.
+  const { fill, opacity, pointCount } = useMemo(() => {
+    const doc = new DOMParser().parseFromString(svgOutput, 'image/svg+xml');
+    const el = resolvePathInDoc(doc, pathId);
+    return {
+      fill: el?.getAttribute('fill') || '#000000',
+      opacity: Math.round(parseFloat(el?.getAttribute('opacity') || '1') * 100),
+      pointCount: (el?.getAttribute('d')?.match(/[MLHVCSQTAZ]/gi) || []).length,
+    };
+  }, [pathId, svgOutput]);
 
   const editSvg = (mutate: (doc: Document) => void) => {
     const parser = new DOMParser();
@@ -38,25 +41,20 @@ export function PathEditor({ pathId, pathEl, svgOutput, onSvgEdit, onClose, onTo
   };
 
   const handleColorChange = (newColor: string) => {
-    setFill(newColor);
     editSvg(doc => {
-      const el = doc.querySelector(`[data-revect-id="${pathId}"]`);
-      if (el) el.setAttribute('fill', newColor);
+      resolvePathInDoc(doc, pathId)?.setAttribute('fill', newColor);
     });
   };
 
   const handleOpacityChange = (newOpacity: number) => {
-    setOpacity(newOpacity);
     editSvg(doc => {
-      const el = doc.querySelector(`[data-revect-id="${pathId}"]`);
-      if (el) el.setAttribute('opacity', String(newOpacity / 100));
+      resolvePathInDoc(doc, pathId)?.setAttribute('opacity', String(newOpacity / 100));
     });
   };
 
   const handleDelete = () => {
     editSvg(doc => {
-      const el = doc.querySelector(`[data-revect-id="${pathId}"]`);
-      if (el) el.remove();
+      resolvePathInDoc(doc, pathId)?.remove();
     });
     onToast('Path deleted', 'success');
     onClose();
@@ -64,7 +62,7 @@ export function PathEditor({ pathId, pathEl, svgOutput, onSvgEdit, onClose, onTo
 
   const handleDuplicate = () => {
     editSvg(doc => {
-      const el = doc.querySelector(`[data-revect-id="${pathId}"]`);
+      const el = resolvePathInDoc(doc, pathId);
       if (el) {
         const clone = el.cloneNode(true) as Element;
         clone.setAttribute('data-revect-id', `path-dup-${Date.now()}`);

@@ -16,34 +16,66 @@ export function WindowFrame({
   const [isMaximized, setIsMaximized] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Window control functions
+  // Browser fallbacks for the window controls. Only meaningful in a top-level
+  // browser tab (embedded webviews can react badly to the Fullscreen API).
+  const isTopLevelBrowser = useCallback(
+    () => !appWindow && window.self === window.top,
+    [appWindow]
+  );
+
+  // Window control functions. Every call is guarded with .catch() so a denied
+  // or failed operation surfaces as a console warning instead of an unhandled
+  // rejection; in a plain browser we fall back to the closest browser
+  // equivalents so the buttons are never dead.
   const minimize = useCallback(() => {
-    appWindow?.minimize();
+    if (appWindow) {
+      appWindow.minimize().catch((e) => console.warn('minimize failed:', e));
+    }
   }, [appWindow]);
 
   const maximize = useCallback(() => {
-    appWindow?.toggleMaximize();
-  }, [appWindow]);
+    if (appWindow) {
+      appWindow.toggleMaximize().catch((e) => console.warn('toggleMaximize failed:', e));
+    } else if (isTopLevelBrowser()) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      } else {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      }
+    }
+  }, [appWindow, isTopLevelBrowser]);
 
   const close = useCallback(() => {
-    appWindow?.close();
-  }, [appWindow]);
+    if (appWindow) {
+      appWindow.close().catch((e) => console.warn('close failed:', e));
+    } else if (isTopLevelBrowser()) {
+      window.close();
+    }
+  }, [appWindow, isTopLevelBrowser]);
 
   const fullscreen = useCallback(() => {
     if (appWindow) {
       appWindow.isFullscreen().then((fs) => {
-        appWindow.setFullscreen(!fs);
-      });
+        appWindow.setFullscreen(!fs).catch((e) => console.warn('setFullscreen failed:', e));
+      }).catch((e) => console.warn('isFullscreen failed:', e));
+    } else if (isTopLevelBrowser()) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      } else {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      }
     }
-  }, [appWindow]);
+  }, [appWindow, isTopLevelBrowser]);
 
   // Initialize window and track state
   useEffect(() => {
     let unlisten: (() => void) | undefined;
+    let unlistenMoved: (() => void) | undefined;
 
     try {
       if ('__TAURI_INTERNALS__' in window || '__TAURI__' in window) {
         const win = getCurrentWindow();
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time native window init
         setAppWindow(win);
 
         // Check initial state
@@ -54,14 +86,26 @@ export function WindowFrame({
         win.onResized(() => {
           win.isMaximized().then(setIsMaximized).catch(() => {});
           win.isFullscreen().then(setIsFullscreen).catch(() => {});
-        }).then((fn) => { unlisten = fn; });
+        }).then((fn) => { unlisten = fn; }).catch((e) => console.warn('onResized failed:', e));
+
+        // Keep the maximize/fullscreen icons in sync while dragging the window
+        // or changing state through the OS (double-click titlebar, etc.).
+        win.onMoved(() => {
+          win.isMaximized().then(setIsMaximized).catch(() => {});
+        }).then((fn) => { unlistenMoved = fn; }).catch(() => {});
       }
-    } catch (e) {
+    } catch {
       console.warn("Not running in Tauri environment");
     }
 
+    // Browser fallback: track fullscreen state so the icon stays in sync.
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFsChange);
+
     return () => {
       unlisten?.();
+      unlistenMoved?.();
+      document.removeEventListener('fullscreenchange', onFsChange);
     };
   }, []);
 

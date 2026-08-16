@@ -25,7 +25,18 @@ interface SettingsPanelProps {
   onToggleShortcuts: () => void;
 }
 
-const Slider = ({ label, value, min, max, step = 1, onChange, unit = '', tooltip }: any) => (
+interface SliderProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  onChange: (value: number) => void;
+  unit?: string;
+  tooltip?: string;
+}
+
+const Slider = ({ label, value, min, max, step = 1, onChange, unit = '', tooltip }: SliderProps) => (
   <div className="mb-4">
     <div className="flex justify-between items-center mb-2">
       <div className="flex items-center gap-1.5">
@@ -58,7 +69,7 @@ export function SettingsPanel({ settings, dispatch, onRunTrace, isTracing, fileS
   const [showPngScale, setShowPngScale] = useState(false);
   const [copied, setCopied] = useState(false);
   
-  const update = (key: keyof TraceSettings, value: any) => {
+  const update = (key: keyof TraceSettings, value: TraceSettings[keyof TraceSettings]) => {
     dispatch({ type: 'UPDATE', payload: { [key]: value } });
   };
 
@@ -101,10 +112,10 @@ export function SettingsPanel({ settings, dispatch, onRunTrace, isTracing, fileS
         
         {/* Presets */}
         <div className="flex gap-2">
-          {['bw', 'photo', 'poster'].map((presetKey) => (
+          {(['bw', 'photo', 'poster'] as const).map((presetKey) => (
             <button 
               key={presetKey}
-              onClick={() => dispatch({ type: 'LOAD_PRESET', payload: presetKey as any })}
+              onClick={() => dispatch({ type: 'LOAD_PRESET', payload: presetKey })}
               className="flex-1 py-1.5 rounded-full text-[12px] font-bold border border-black/10 hover:border-black/30 transition-all bg-white/40 hover:bg-white/60 text-ink active:scale-[0.96]"
             >
               {t(`preset.${presetKey}`)}

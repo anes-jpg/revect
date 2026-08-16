@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Eye, EyeOff, ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
 import { useTranslation } from '../i18n';
+import { resolvePathInDoc } from './svgMath';
 
 interface LayersPanelProps {
   svgOutput: string | null;
@@ -35,7 +36,7 @@ export function LayersPanel({ svgOutput, onSelectPath, selectedPathId, onSvgEdit
     if (!svgOutput) return;
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgOutput, 'image/svg+xml');
-    const el = doc.querySelector(`[data-revect-id="${pathId}"]`);
+    const el = resolvePathInDoc(doc, pathId);
     if (el) {
       const isVisible = el.getAttribute('display') !== 'none';
       if (isVisible) {

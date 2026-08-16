@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components -- context files intentionally
+   share the hook and provider; fast refresh falls back to full reload for them. */
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 
 export type ToastType = 'success' | 'warning' | 'error';

@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Tool state
+.freebuff/
+
+# Windows shell junk
+desktop.ini
+Thumbs.db
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
