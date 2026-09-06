@@ -13,6 +13,7 @@ Built with [Tauri](https://tauri.app) (Rust + WebView2) and React, powered by [V
   - **Floating Canvas HUD**: Real-time resolution chip, vector path counter, and 1-click zoom fit (`F`)
   - **Hover Color Eyedropper**: Instant live color chip and 1-click hex clipboard copy
   - **Symmetry Flip (`H` & `V`)**: 1-click horizontal and vertical design mirroring
+  - **Invert Artwork / Trace (`I`)**: Dedicated inverse tracing mode for light shapes, text, or logos on dark backgrounds with selectable vector fill (White or Black)
   - **Zoom Minimap Navigator**: Intelligent draggable navigator thumbnail that auto-appears when zoomed in
 - **Ona & Swift Bloodline Desktop Shell**:
   - Centered frosted options dock with quick actions
