@@ -15,6 +15,8 @@ export interface TraceSettings {
   pathPrecision: number;
   livePreview: boolean;
   bwThreshold: number;
+  invert: boolean;
+  bwOutputColor?: 'black' | 'white';
 }
 
 export const defaultSettings: TraceSettings = {
@@ -30,6 +32,8 @@ export const defaultSettings: TraceSettings = {
   pathPrecision: 8,
   livePreview: true,
   bwThreshold: 128,
+  invert: false,
+  bwOutputColor: 'black',
 };
 
 export const presets = {

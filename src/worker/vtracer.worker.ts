@@ -11,7 +11,7 @@ let isInitialized = false;
  *  - drop the empty `transform="translate()"` VTracer stamps on zero-offset paths,
  *  - in B&W (Binary) mode, give the shapes a real fill (VTracer emits `fill="none"`).
  */
-function normalizeSvg(svg: string, width: number, height: number, isBinary: boolean): string {
+function normalizeSvg(svg: string, width: number, height: number, isBinary: boolean, fillHex: string = '#000000'): string {
   let out = svg;
 
   if (!out.includes('viewBox=')) {
@@ -21,9 +21,9 @@ function normalizeSvg(svg: string, width: number, height: number, isBinary: bool
   // Remove no-op transforms: translate() or translate(0,0)/translate(0 0).
   out = out.replace(/\s*transform="translate\(\s*(?:0\s*[, ]\s*0\s*)?\)"/g, '');
 
-  // Binary mode paths come back as `fill="none"` — render them as solid black shapes.
+  // Binary mode paths come back as `fill="none"` — render them with fillHex.
   if (isBinary) {
-    out = out.replace(/fill="none"/g, 'fill="#000000"');
+    out = out.replace(/fill="none"/g, `fill="${fillHex}"`);
   }
 
   return out;
@@ -43,6 +43,7 @@ self.onmessage = (e: MessageEvent) => {
     }
 
     const isBinary = settings.colorMode === 'bw';
+    const invert = !!settings.invert;
 
     config = new TracerConfig();
     config.setColorMode(isBinary ? ColorMode.Binary : ColorMode.Color);
@@ -72,22 +73,50 @@ self.onmessage = (e: MessageEvent) => {
     if (isBinary) {
       const threshold = settings.bwThreshold ?? 128;
       for (let i = 0; i < pixels.length; i += 4) {
-        // Composite over white so transparent regions read as background — VTracer's
-        // Binary clustering keys on alpha and would otherwise trace them as shapes.
         const a = pixels[i + 3] / 255;
+        // Fully/mostly transparent pixels are always treated as background (val = 255)
+        if (a < 0.1) {
+          pixels[i] = pixels[i + 1] = pixels[i + 2] = 255;
+          pixels[i + 3] = 255;
+          continue;
+        }
+
+        // Composite over white for anti-aliased edge pixels
         const r = pixels[i] * a + 255 * (1 - a);
         const g = pixels[i + 1] * a + 255 * (1 - a);
         const b = pixels[i + 2] * a + 255 * (1 - a);
 
         const luma = 0.299 * r + 0.587 * g + 0.114 * b;
-        const val = luma > threshold ? 255 : 0;
+        
+        let val: number;
+        if (invert) {
+          // When inverted: bright shapes (> threshold) become foreground (0 = traced),
+          // dark background (<= threshold) becomes background (255 = omitted).
+          val = luma > threshold ? 0 : 255;
+        } else {
+          // Standard: dark shapes (<= threshold) become foreground (0 = traced),
+          // bright background (> threshold) become background (255 = omitted).
+          val = luma > threshold ? 255 : 0;
+        }
+
         pixels[i] = pixels[i + 1] = pixels[i + 2] = val;
         pixels[i + 3] = 255;
       }
+    } else if (invert) {
+      // Invert color channels in Color mode
+      for (let i = 0; i < pixels.length; i += 4) {
+        pixels[i] = 255 - pixels[i];
+        pixels[i + 1] = 255 - pixels[i + 1];
+        pixels[i + 2] = 255 - pixels[i + 2];
+      }
     }
 
+    const fillHex = settings.bwOutputColor === 'white' 
+      ? '#FFFFFF' 
+      : (settings.bwOutputColor === 'black' ? '#000000' : (invert ? '#FFFFFF' : '#000000'));
+
     const raw = convertImageToSvg(pixels, imageData.width, imageData.height, config);
-    const svgString = normalizeSvg(raw, imageData.width, imageData.height, isBinary);
+    const svgString = normalizeSvg(raw, imageData.width, imageData.height, isBinary, fillHex);
 
     self.postMessage({ type: 'RESULT', requestId, svg: svgString });
   } catch (error) {

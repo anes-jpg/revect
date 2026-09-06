@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Search, Play, Copy, Download, Image as ImageIcon, Sparkles, 
   Settings, Keyboard, Moon, Sun, Monitor, Maximize2, Minus, X,
-  Sliders, Palette, RefreshCw
+  Sliders, Palette, RefreshCw, Contrast
 } from 'lucide-react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { usePreferences } from '../hooks/PreferencesContext';
@@ -25,6 +25,7 @@ interface CommandPaletteProps {
   onDownloadPng?: (scale: number) => void;
   onLoadPreset: (preset: 'bw' | 'photo' | 'poster') => void;
   onUpdateSetting: (key: string, value: any) => void;
+  onToggleInvert?: () => void;
   onOpenPreferences: () => void;
   onToggleShortcuts: () => void;
   onClearImage?: () => void;
@@ -41,6 +42,7 @@ export function CommandPalette({
   onDownloadPng,
   onLoadPreset,
   onUpdateSetting,
+  onToggleInvert,
   onOpenPreferences,
   onToggleShortcuts,
   onClearImage,
@@ -181,6 +183,14 @@ export function CommandPalette({
         category: 'Modes',
         icon: <Sliders className="w-4 h-4" />,
         perform: () => { onUpdateSetting('mode', 'polygon'); onClose(); },
+      },
+      {
+        id: 'toggle-invert',
+        title: 'Invert Artwork / Trace (Light on Dark)',
+        category: 'Modes',
+        shortcut: 'I',
+        icon: <Contrast className="w-4 h-4 text-lime" />,
+        perform: () => { onToggleInvert?.(); onClose(); },
       }
     );
 

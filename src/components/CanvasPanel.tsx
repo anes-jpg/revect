@@ -12,6 +12,8 @@ interface CanvasPanelProps {
   onSelectPath?: (pathId: string | null, pathEl?: SVGPathElement | null) => void;
   selectedPathId?: string | null;
   onSvgEdit?: (newSvg: string) => void;
+  invert?: boolean;
+  onToggleInvert?: () => void;
 }
 
 export function CanvasPanel({ 
@@ -20,7 +22,9 @@ export function CanvasPanel({
   isTracing, 
   onSelectPath, 
   selectedPathId, 
-  onSvgEdit 
+  onSvgEdit,
+  invert = false,
+  onToggleInvert
 }: CanvasPanelProps) {
   const [activeTab, setActiveTab] = useState<'original' | 'vector' | 'split' | 'ghost'>('vector');
   const [splitPos, setSplitPos] = useState(50);
@@ -93,6 +97,9 @@ export function CanvasPanel({
       }
       if (e.code === 'KeyV') {
         setFlipV(prev => !prev);
+      }
+      if (e.code === 'KeyI') {
+        onToggleInvert?.();
       }
       if (e.code === 'KeyO' && !e.repeat) {
         setIsPeekingOriginal(true);
@@ -282,6 +289,23 @@ export function CanvasPanel({
             </button>
 
             <div className="w-px h-3.5 bg-black/10 dark:bg-white/10 mx-0.5" />
+
+            {/* Invert Artwork */}
+            <button
+              onClick={onToggleInvert}
+              className={`px-2.5 h-7 flex items-center gap-1.5 rounded-full text-[11px] font-bold transition-all ${
+                invert 
+                  ? 'bg-lime text-black shadow-xs' 
+                  : 'text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/15'
+              }`}
+              title="Invert Artwork / Trace (I)"
+            >
+              <div className="w-3.5 h-3.5 rounded-full border border-current overflow-hidden flex flex-shrink-0">
+                <div className="w-1/2 h-full bg-current" />
+                <div className="w-1/2 h-full bg-transparent" />
+              </div>
+              <span>Invert</span>
+            </button>
 
             {/* X-Ray Wireframe Mode */}
             <button

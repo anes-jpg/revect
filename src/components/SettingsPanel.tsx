@@ -184,7 +184,57 @@ export function SettingsPanel({ settings, dispatch, onRunTrace, isTracing, fileS
             <Slider label={t('slider.colorPrecision.label')} value={settings.colorPrecision} min={1} max={8} onChange={(v: number) => update('colorPrecision', v)} tooltip={t('slider.colorPrecision.tooltip')} />
           )}
           {settings.colorMode === 'bw' && (
-            <Slider label={t('slider.bwThreshold.label')} value={settings.bwThreshold} min={1} max={255} onChange={(v: number) => update('bwThreshold', v)} tooltip={t('slider.bwThreshold.tooltip')} />
+            <>
+              <Slider label={t('slider.bwThreshold.label')} value={settings.bwThreshold} min={1} max={255} onChange={(v: number) => update('bwThreshold', v)} tooltip={t('slider.bwThreshold.tooltip')} />
+              
+              {/* Invert Artwork Card */}
+              <div className="bg-black/5 dark:bg-white/5 p-3 rounded-[14px] border border-black/5 dark:border-white/5 flex flex-col gap-2 my-2 transition-all">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[12px] font-bold text-ink dark:text-white">Invert Artwork</span>
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-lime/20 text-lime-dark dark:text-lime font-bold">I</span>
+                    </div>
+                    <span className="text-[10px] text-ink-muted dark:text-white/50">Trace light shapes on dark background</span>
+                  </div>
+                  <button 
+                    onClick={() => update('invert', !settings.invert)}
+                    className={`w-10 h-6 rounded-full p-1 transition-colors duration-200 ${settings.invert ? 'bg-lime-dark dark:bg-lime' : 'bg-black/20 dark:bg-white/20'}`}
+                    title="Invert Artwork (I)"
+                  >
+                    <div className={`w-4 h-4 bg-white rounded-full shadow-xs transition-transform duration-200 ${settings.invert ? 'translate-x-4' : 'translate-x-0'}`} />
+                  </button>
+                </div>
+
+                {settings.invert && (
+                  <div className="pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between animate-fadeIn">
+                    <span className="text-[11px] font-medium text-ink-muted dark:text-white/60">Vector Fill</span>
+                    <div className="flex bg-black/10 dark:bg-black/40 p-0.5 rounded-full">
+                      <button
+                        onClick={() => update('bwOutputColor', 'white')}
+                        className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                          (settings.bwOutputColor || 'white') === 'white'
+                            ? 'bg-white text-black shadow-xs'
+                            : 'text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white'
+                        }`}
+                      >
+                        White
+                      </button>
+                      <button
+                        onClick={() => update('bwOutputColor', 'black')}
+                        className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                          settings.bwOutputColor === 'black'
+                            ? 'bg-ink text-white dark:bg-white/20 shadow-xs'
+                            : 'text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white'
+                        }`}
+                      >
+                        Black
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
           <Slider label={t('slider.filterSpeckle.label')} value={settings.filterSpeckle} min={1} max={128} onChange={(v: number) => update('filterSpeckle', v)} tooltip={t('slider.filterSpeckle.tooltip')} />
           <Slider label={t('slider.cornerThreshold.label')} value={settings.cornerThreshold} min={0} max={180} onChange={(v: number) => update('cornerThreshold', v)} unit="°" tooltip={t('slider.cornerThreshold.tooltip')} />
@@ -205,24 +255,40 @@ export function SettingsPanel({ settings, dispatch, onRunTrace, isTracing, fileS
 
         {/* Hierarchical Mode */}
         {settings.colorMode === 'color' && (
-          <div className="relative flex bg-black/10 dark:bg-black/40 p-1 rounded-full border border-black/5 dark:border-white/5">
-            <div 
-              className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-white/20 rounded-full transition-transform duration-300 ease-out shadow-sm"
-              style={{ transform: settings.hierarchical === 'cutout' ? 'translateX(100%)' : 'translateX(0)' }}
-            />
-            <button 
-              onClick={() => update('hierarchical', 'stacked')}
-              className={`flex-1 py-1 z-10 text-[12px] font-bold transition-colors ${settings.hierarchical === 'stacked' ? 'text-ink dark:text-white' : 'text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white'}`}
-            >
-               {t('hierarchical.stacked')}
-            </button>
-            <button 
-              onClick={() => update('hierarchical', 'cutout')}
-              className={`flex-1 py-1 z-10 text-[12px] font-bold transition-colors ${settings.hierarchical === 'cutout' ? 'text-ink dark:text-white' : 'text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white'}`}
-            >
-              {t('hierarchical.cutout')}
-            </button>
-          </div>
+          <>
+            <div className="relative flex bg-black/10 dark:bg-black/40 p-1 rounded-full border border-black/5 dark:border-white/5">
+              <div 
+                className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-white/20 rounded-full transition-transform duration-300 ease-out shadow-sm"
+                style={{ transform: settings.hierarchical === 'cutout' ? 'translateX(100%)' : 'translateX(0)' }}
+              />
+              <button 
+                onClick={() => update('hierarchical', 'stacked')}
+                className={`flex-1 py-1 z-10 text-[12px] font-bold transition-colors ${settings.hierarchical === 'stacked' ? 'text-ink dark:text-white' : 'text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white'}`}
+              >
+                 {t('hierarchical.stacked')}
+              </button>
+              <button 
+                onClick={() => update('hierarchical', 'cutout')}
+                className={`flex-1 py-1 z-10 text-[12px] font-bold transition-colors ${settings.hierarchical === 'cutout' ? 'text-ink dark:text-white' : 'text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white'}`}
+              >
+                {t('hierarchical.cutout')}
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 px-3 py-2 rounded-[12px] border border-black/5 dark:border-white/5">
+              <div className="flex flex-col">
+                <span className="text-[12px] font-bold text-ink dark:text-white">Invert Colors</span>
+                <span className="text-[10px] text-ink-muted dark:text-white/50">Negative / inverse color tracing</span>
+              </div>
+              <button 
+                onClick={() => update('invert', !settings.invert)}
+                className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 ${settings.invert ? 'bg-lime-dark dark:bg-lime' : 'bg-black/20 dark:bg-white/20'}`}
+                title="Invert Colors (I)"
+              >
+                <div className={`w-4 h-4 bg-white rounded-full shadow-xs transition-transform duration-200 ${settings.invert ? 'translate-x-4' : 'translate-x-0'}`} />
+              </button>
+            </div>
+          </>
         )}
 
         {/* Live Preview Toggle */}

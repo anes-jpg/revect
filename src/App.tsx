@@ -269,6 +269,12 @@ function App() {
     addToast('Canvas cleared', 'success');
   }, [addToast]);
 
+  // Toggle Invert
+  const handleToggleInvert = useCallback(() => {
+    dispatch({ type: 'UPDATE', payload: { invert: !settings.invert } });
+    addToast(!settings.invert ? '✓ Inverted artwork (light foreground)' : 'Invert disabled', 'success');
+  }, [settings.invert, addToast]);
+
   // Keyboard shortcuts for undo/redo and Command Palette
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -383,6 +389,8 @@ function App() {
             onSelectPath={handleSelectPath}
             selectedPathId={selectedPathId}
             onSvgEdit={handleSvgEdit}
+            invert={settings.invert}
+            onToggleInvert={handleToggleInvert}
           />
 
           {/* Path Editor */}
@@ -412,6 +420,7 @@ function App() {
         onDownloadPng={handleDownloadPng}
         onLoadPreset={(preset) => dispatch({ type: 'LOAD_PRESET', payload: preset })}
         onUpdateSetting={(key, value) => dispatch({ type: 'UPDATE', payload: { [key]: value } })}
+        onToggleInvert={handleToggleInvert}
         onOpenPreferences={() => setIsPreferencesOpen(true)}
         onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
         onClearImage={handleClearImage}
