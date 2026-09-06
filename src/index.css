@@ -1,3 +1,4 @@
+@import "lenis/dist/lenis.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,8 +9,8 @@
   --lime-muted: #CCEFAF;
   --lime-glow: rgba(138, 226, 90, 0.35);
   
-  --canvas-bg: #FFFFFF;
-  --panel-bg: #8AE25A;
+  --canvas-bg: #F4F4F6;
+  --panel-bg: #FFFFFF;
   --panel-dark: #222226;
   
   --ink: #111111;

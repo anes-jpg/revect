@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Info, Download, Copy, Play, Settings, Keyboard } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Info, Download, Copy, Play } from 'lucide-react';
 import type { TraceSettings, SettingsAction } from '../hooks/useSettings';
-import Logo from './Logo';
 import { LayersPanel } from './LayersPanel';
 import { useTranslation } from '../i18n';
+import Lenis from 'lenis';
 
 interface SettingsPanelProps {
   settings: TraceSettings;
@@ -13,7 +13,7 @@ interface SettingsPanelProps {
   fileSizeEstimate?: string;
   hasImage: boolean;
   error?: string | null;
-  onOpenPreferences: () => void;
+  onOpenPreferences?: () => void;
   onDownloadSvg?: () => void;
   onDownloadPng?: (scale: number) => void;
   onCopySvg?: () => void;
@@ -21,8 +21,8 @@ interface SettingsPanelProps {
   selectedPathId?: string | null;
   onSelectPath?: (id: string) => void;
   onSvgEdit?: (newSvg: string) => void;
-  showShortcuts: boolean;
-  onToggleShortcuts: () => void;
+  showShortcuts?: boolean;
+  onToggleShortcuts?: () => void;
 }
 
 interface SliderProps {
@@ -64,11 +64,33 @@ const Slider = ({ label, value, min, max, step = 1, onChange, unit = '', tooltip
   </div>
 );
 
-export function SettingsPanel({ settings, dispatch, onRunTrace, isTracing, fileSizeEstimate, hasImage, error, onOpenPreferences, onDownloadSvg, onDownloadPng, onCopySvg, svgOutput, selectedPathId, onSelectPath, onSvgEdit, showShortcuts, onToggleShortcuts }: SettingsPanelProps) {
+export function SettingsPanel({ settings, dispatch, onRunTrace, isTracing, fileSizeEstimate, hasImage, error, onDownloadSvg, onDownloadPng, onCopySvg, svgOutput, selectedPathId, onSelectPath, onSvgEdit }: SettingsPanelProps) {
   const { t } = useTranslation();
   const [showPngScale, setShowPngScale] = useState(false);
   const [copied, setCopied] = useState(false);
   
+  const scrollWrapperRef = useRef<HTMLDivElement>(null);
+  const scrollContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!scrollWrapperRef.current || !scrollContentRef.current) return;
+
+    const lenis = new Lenis({
+      wrapper: scrollWrapperRef.current,
+      content: scrollContentRef.current,
+      autoRaf: true,
+      smoothWheel: true,
+      duration: 1.0,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+    });
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   const update = (key: keyof TraceSettings, value: TraceSettings[keyof TraceSettings]) => {
     dispatch({ type: 'UPDATE', payload: { [key]: value } });
   };
@@ -80,39 +102,31 @@ export function SettingsPanel({ settings, dispatch, onRunTrace, isTracing, fileS
   };
 
   return (
-    <div className="w-full h-full flex flex-col overflow-y-auto pt-4 pb-4 transform-gpu">
-      {/* Header */}
-      <div className="px-6 pb-4 flex justify-between items-start relative min-h-[80px]">
-        <div className="h-16 w-auto text-ink dark:text-lime transition-colors">
-          <Logo />
+    <div 
+      ref={scrollWrapperRef}
+      className="w-full h-full overflow-y-auto overflow-x-hidden transform-gpu overscroll-contain"
+    >
+      <div 
+        ref={scrollContentRef}
+        className="w-full flex flex-col pt-4 pb-6"
+      >
+        {/* Panel Section Header */}
+        <div className="px-6 pb-3 flex items-center justify-between">
+          <span className="text-[11px] font-mono font-medium tracking-wider uppercase text-ink-muted dark:text-white/40">
+            Presets & Parameters
+          </span>
+          {fileSizeEstimate && (
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-ink-muted dark:text-white/50 border border-black/5 dark:border-white/5">
+              {fileSizeEstimate}
+            </span>
+          )}
         </div>
-        <div className="absolute right-6 top-8 flex items-center gap-2">
-          <button 
-            onClick={onToggleShortcuts}
-            className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${
-              showShortcuts 
-                ? 'bg-ink text-white dark:bg-lime dark:text-black shadow-md' 
-                : 'bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-ink-muted dark:text-white/70 hover:text-ink dark:hover:text-white'
-            }`}
-            title={showShortcuts ? "Hide Controls" : "Show Controls"}
-          >
-            <Keyboard size={16} />
-          </button>
-          <button 
-            onClick={onOpenPreferences}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-ink-muted dark:text-white/70 hover:text-ink dark:hover:text-white transition-colors"
-            title="Preferences"
-          >
-            <Settings size={16} />
-          </button>
-        </div>
-      </div>
 
-      <div className="flex-1 px-6 pb-6 flex flex-col gap-6">
-        
-        {/* Presets */}
-        <div className="flex gap-2">
-          {(['bw', 'photo', 'poster'] as const).map((presetKey) => (
+        <div className="px-6 flex flex-col gap-6">
+          {/* Presets */}
+          <div className="flex gap-2">
+            {(['bw', 'photo', 'poster'] as const).map((presetKey) => (
+
             <button 
               key={presetKey}
               onClick={() => dispatch({ type: 'LOAD_PRESET', payload: presetKey })}
@@ -299,5 +313,6 @@ export function SettingsPanel({ settings, dispatch, onRunTrace, isTracing, fileS
 
       </div>
     </div>
-  );
+  </div>
+);
 }
