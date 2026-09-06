@@ -101,48 +101,43 @@ export function WindowFrame({
 
   return (
     <div
-      className="w-screen h-screen bg-lime relative"
+      className="w-screen h-screen bg-white dark:bg-canvas-bg flex flex-col overflow-hidden select-none"
       data-tauri-drag-region
     >
-      <div
-        className="absolute inset-2 rounded-[24px] flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] bg-white dark:bg-canvas-bg border border-black/10 dark:border-white/10"
-        style={{ animation: 'windowEnter 500ms cubic-bezier(0.34, 1.56, 0.64, 1)' }}
-      >
-        {/* Ona & Swift Bloodline Title Bar */}
-        <TopNavIsland
-          onOpenCommandPalette={onOpenCommandPalette || (() => {})}
-          onOpenPreferences={onOpenPreferences || (() => {})}
-          onToggleShortcuts={onToggleShortcuts || (() => {})}
-          showShortcuts={!!showShortcuts}
-          hasSvg={hasSvg}
-          onCopySvg={onCopySvg}
-          onDownloadSvg={onDownloadSvg}
-          isMaximized={isMaximized}
-          onToggleMaximize={maximize}
-          onMinimize={minimize}
-          onClose={close}
-        />
+      {/* Ona & Swift Bloodline Title Bar */}
+      <TopNavIsland
+        onOpenCommandPalette={onOpenCommandPalette || (() => {})}
+        onOpenPreferences={onOpenPreferences || (() => {})}
+        onToggleShortcuts={onToggleShortcuts || (() => {})}
+        showShortcuts={!!showShortcuts}
+        hasSvg={hasSvg}
+        onCopySvg={onCopySvg}
+        onDownloadSvg={onDownloadSvg}
+        isMaximized={isMaximized}
+        onToggleMaximize={maximize}
+        onMinimize={minimize}
+        onClose={close}
+      />
 
-        {/* Main content area */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Left Canvas Area */}
-          <div className="flex-1 h-full relative bg-white dark:bg-canvas-bg">
-            {children}
-          </div>
-
-          {/* Right Settings Sidebar */}
-          <div className="w-[30%] min-w-[280px] max-w-[340px] h-full bg-panel-bg dark:bg-panel-dark flex flex-col relative overflow-hidden border-l border-black/5 dark:border-white/5 transition-colors duration-200">
-            <div className="absolute inset-0 bg-white/20 dark:bg-black/20 pointer-events-none" />
-            
-            <div className="absolute inset-0">
-              {rightPanel}
-            </div>
-          </div>
+      {/* Main content area */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Canvas Area */}
+        <div className="flex-1 h-full relative bg-white dark:bg-canvas-bg">
+          {children}
         </div>
 
-        {/* Keyboard Shortcuts Bar */}
-        {showShortcuts && <KeyboardShortcutsBar />}
+        {/* Right Settings Sidebar */}
+        <div className="w-[30%] min-w-[280px] max-w-[340px] h-full bg-panel-bg dark:bg-panel-dark flex flex-col relative overflow-hidden border-l border-black/5 dark:border-white/5 transition-colors duration-200">
+          <div className="absolute inset-0 bg-white/20 dark:bg-black/20 pointer-events-none" />
+          
+          <div className="absolute inset-0">
+            {rightPanel}
+          </div>
+        </div>
       </div>
+
+      {/* Keyboard Shortcuts Bar */}
+      {showShortcuts && <KeyboardShortcutsBar />}
     </div>
   );
 }

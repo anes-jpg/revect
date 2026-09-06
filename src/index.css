@@ -44,7 +44,7 @@ html, body, #root {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: var(--lime); /* Match the window background so no black bleeds at edges */
+  background: var(--canvas-bg);
 }
 
 body {
