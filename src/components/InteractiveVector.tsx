@@ -9,6 +9,8 @@ interface InteractiveVectorProps {
   onSelectPath: (id: string | null) => void;
   onSvgEdit: (newSvg: string) => void;
   containerRef: React.RefObject<HTMLDivElement | null>;
+  isWireframe?: boolean;
+  onHoverColor?: (color: string | null, clientX: number, clientY: number) => void;
 }
 
 interface PathNode {
@@ -21,7 +23,7 @@ interface PathNode {
   element: SVGPathElement | null;
 }
 
-export function InteractiveVector({ svgOutput, zoom, selectedPathId, onSelectPath, onSvgEdit, containerRef }: InteractiveVectorProps) {
+export function InteractiveVector({ svgOutput, zoom, selectedPathId, onSelectPath, onSvgEdit, containerRef, isWireframe = false, onHoverColor }: InteractiveVectorProps) {
   // Parse SVG string into structured React state
   const { viewBox, nodes } = useMemo(() => {
     if (!svgOutput) return { viewBox: '0 0 100 100', nodes: [] };
@@ -101,9 +103,11 @@ export function InteractiveVector({ svgOutput, zoom, selectedPathId, onSelectPat
             node={node}
             svgRef={svgRef}
             isSelected={selectedPathId === node.id}
+            isWireframe={isWireframe}
             onSelect={() => onSelectPath(node.id)}
             onDragEnd={saveStateToParent}
             registerRef={(el) => (pathRefs.current[node.id] = el)}
+            onHoverColor={onHoverColor}
           />
         ))}
       </svg>
@@ -125,12 +129,14 @@ interface DraggablePathProps {
   node: PathNode;
   svgRef: React.RefObject<SVGSVGElement | null>;
   isSelected: boolean;
+  isWireframe?: boolean;
   onSelect: () => void;
   onDragEnd: () => void;
   registerRef: (el: SVGPathElement | null) => void;
+  onHoverColor?: (color: string | null, clientX: number, clientY: number) => void;
 }
 
-function DraggablePath({ node, svgRef, isSelected, onSelect, onDragEnd, registerRef }: DraggablePathProps) {
+function DraggablePath({ node, svgRef, isSelected, isWireframe = false, onSelect, onDragEnd, registerRef, onHoverColor }: DraggablePathProps) {
   const pathRef = useRef<SVGPathElement>(null);
   const dragStart = useRef({ x: 0, y: 0 });
   const transformStart = useRef('');
@@ -212,18 +218,22 @@ function DraggablePath({ node, svgRef, isSelected, onSelect, onDragEnd, register
     }
   };
 
-  const handlePointerEnter = () => {
+  const handlePointerEnter = (e: React.PointerEvent) => {
     if (!isSelected && pathRef.current) {
       pathRef.current.style.stroke = '#8AE25A';
       pathRef.current.style.strokeWidth = '1.5px';
+    }
+    if (node.fill && node.fill !== 'none') {
+      onHoverColor?.(node.fill, e.clientX, e.clientY);
     }
   };
 
   const handlePointerLeave = () => {
     if (!isSelected && pathRef.current) {
-      pathRef.current.style.stroke = '';
-      pathRef.current.style.strokeWidth = '';
+      pathRef.current.style.stroke = isWireframe ? '#8AE25A' : '';
+      pathRef.current.style.strokeWidth = isWireframe ? '1px' : '';
     }
+    onHoverColor?.(null, 0, 0);
   };
 
   return (
@@ -231,21 +241,27 @@ function DraggablePath({ node, svgRef, isSelected, onSelect, onDragEnd, register
       ref={pathRef}
       data-revect-id={node.id}
       d={node.d}
-      fill={node.fill}
-      opacity={node.opacity}
+      fill={isWireframe ? 'transparent' : node.fill}
+      opacity={isWireframe ? 0.9 : node.opacity}
       transform={node.transform}
       display={node.display || undefined}
       cursor="pointer"
       onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
+      onPointerMove={(e) => {
+        handlePointerMove(e);
+        if (!isDragging.current && node.fill && node.fill !== 'none') {
+          onHoverColor?.(node.fill, e.clientX, e.clientY);
+        }
+      }}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
       style={{
-        stroke: isSelected ? '#5FBF2A' : undefined,
-        strokeWidth: isSelected ? '2.5px' : undefined,
+        stroke: isSelected ? '#5FBF2A' : (isWireframe ? '#8AE25A' : undefined),
+        strokeWidth: isSelected ? '2.5px' : (isWireframe ? '1px' : undefined),
         strokeDasharray: isSelected ? '6 3' : undefined,
+        vectorEffect: isWireframe ? 'non-scaling-stroke' : undefined,
       }}
     />
   );
