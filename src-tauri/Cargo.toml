@@ -1,10 +1,10 @@
 [package]
 name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+version = "0.3.0"
+description = "Revect - Raster to Vector Studio"
+authors = ["anes-jpg <anes-jpg@users.noreply.github.com>"]
+license = "MIT"
+repository = "https://github.com/anes-jpg/revect"
 edition = "2021"
 rust-version = "1.77.2"
 
