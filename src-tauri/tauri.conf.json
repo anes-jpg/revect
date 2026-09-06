@@ -12,9 +12,13 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Revect",
         "width": 1200,
         "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "center": true,
         "resizable": true,
         "fullscreen": false,
         "decorations": false,
@@ -35,8 +39,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "android": {
-      "debugApplicationIdSuffix": ".debug"
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      }
     }
   }
 }

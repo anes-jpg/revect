@@ -7,6 +7,11 @@ export default defineConfig({
     react(),
     wasm()
   ],
+  server: {
+    watch: {
+      ignored: ['**/src-tauri/**'],
+    },
+  },
   worker: {
     plugins: () => [wasm()],
     format: 'es',
