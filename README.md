@@ -6,15 +6,29 @@ Built with [Tauri](https://tauri.app) (Rust + WebView2) and React, powered by [V
 
 ## Features
 
-- **Drag-and-drop tracing** — drop an image and get vectors instantly with live preview
-- **Tracing presets** — B&W, Photo, and Poster, plus fine-grained controls (color precision, speckle filter, corner threshold, gradient step, spline settings, path precision)
-- **Color modes** — full color or black & white (with threshold), stacked or cutout layering
-- **Tracing modes** — pixel, polygon, and spline output
-- **Vector editing** — select paths on the canvas to move, resize (from any corner, anchored at center), recolor, adjust opacity, duplicate, delete, or toggle layer visibility
-- **Undo / redo** — full history (Ctrl+Z / Ctrl+Shift+Z), with keyboard shortcuts that never hijack typing in inputs
-- **Canvas tools** — zoom, pan (space or middle mouse), fit, rotate view, and split/original/vector comparison views
-- **Exports** — SVG download, PNG export at 1×/2×/4× scale, or copy the SVG source
-- **Polished shell** — custom frameless window with working minimize/maximize/fullscreen/close controls, branded app icon, and a boot animation
+- **Beginner-Friendly Canvas Studio Suite**:
+  - **Backdrop Switcher**: 4 modes (Checkerboard grid, Studio Dark, Studio Light, and Neon Pink contrast keying)
+  - **X-Ray / Wireframe Mode (`W`)**: High-contrast neon-green outline rendering to inspect curves and overlapping paths
+  - **Onion-Skin & Quick Peek (`O`)**: Ghost blend slider (0–100%) plus instant Hold-`O`-to-peek bitmap comparison
+  - **Floating Canvas HUD**: Real-time resolution chip, vector path counter, and 1-click zoom fit (`F`)
+  - **Hover Color Eyedropper**: Instant live color chip and 1-click hex clipboard copy
+  - **Symmetry Flip (`H` & `V`)**: 1-click horizontal and vertical design mirroring
+  - **Zoom Minimap Navigator**: Intelligent draggable navigator thumbnail that auto-appears when zoomed in
+- **Ona & Swift Bloodline Desktop Shell**:
+  - Centered frosted options dock with quick actions
+  - Framer-inspired Command Palette (`Ctrl+K` / `⌘K`)
+  - Native Windows-style window controls (`—`, `□`, `✕`) with custom borderless acrylic styling
+  - Lenis smooth inertia momentum scrolling in the settings drawer
+- **Fast Vector Tracing Engine**:
+  - Powered by VTracer compiled to WebAssembly running in a dedicated Web Worker
+  - B&W, Photo, and Poster presets with fine-grained color, curve, speckle, and corner precision tuning
+  - Color and Black & White tracing modes (stacked or cutout layering)
+  - Pixel, polygon, and spline curve generation
+- **Direct Canvas Vector Editing**:
+  - Select, drag, resize (anchored at center), recolor, adjust opacity, duplicate, and delete vector paths
+  - Full multi-step Undo / Redo history (`Ctrl+Z` / `Ctrl+Shift+Z`)
+- **Exports**:
+  - SVG download, copy SVG source, and PNG raster exports at 1×, 2×, and 4× scale
 
 ## Development
 

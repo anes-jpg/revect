@@ -1,7 +1,7 @@
 {
   "name": "revect",
   "private": true,
-  "version": "0.3.0",
+  "version": "1.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
