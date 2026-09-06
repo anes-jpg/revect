@@ -3,6 +3,7 @@ import { WindowFrame } from './components/WindowFrame';
 import { SettingsPanel } from './components/SettingsPanel';
 import { CanvasPanel } from './components/CanvasPanel';
 import { PreferencesModal } from './components/PreferencesModal';
+import { CommandPalette } from './components/CommandPalette';
 import { PathEditor } from './components/PathEditor';
 import { BootScreen } from './components/BootScreen';
 import { settingsReducer, defaultSettings } from './hooks/useSettings';
@@ -33,6 +34,7 @@ function App() {
   const [svgOutput, setSvgOutput] = useState<string | null>(null);
   const [isTracing, setIsTracing] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedPathId, setSelectedPathId] = useState<string | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -256,11 +258,37 @@ function App() {
     setSelectedPathId(id);
   }, []);
 
-  // Keyboard shortcuts for undo/redo
+  // Clear canvas
+  const handleClearImage = useCallback(() => {
+    setOriginalImage(null);
+    setFileName(null);
+    setSvgOutput(null);
+    setSelectedPathId(null);
+    imageDataRef.current = null;
+    setImageVersion(v => v + 1);
+    addToast('Canvas cleared', 'success');
+  }, [addToast]);
+
+  // Keyboard shortcuts for undo/redo and Command Palette
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      // Toggle Command Palette with Ctrl+K or Cmd+K
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
       // Don't hijack shortcuts while the user is typing in an input.
       if (isTypingTarget(e.target)) return;
+
+      // Question mark toggles keyboard shortcuts
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        setShowShortcuts(prev => !prev);
+        return;
+      }
+
       if (e.ctrlKey && e.shiftKey && e.key === 'Z') {
         e.preventDefault();
         const svg = svgHistory.redo();
@@ -304,7 +332,16 @@ function App() {
   );
 
   return (
-    <WindowFrame rightPanel={rightPanel} showShortcuts={showShortcuts}>
+    <WindowFrame 
+      rightPanel={rightPanel} 
+      showShortcuts={showShortcuts}
+      onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+      onOpenPreferences={() => setIsPreferencesOpen(true)}
+      onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
+      hasSvg={!!svgOutput}
+      onCopySvg={handleCopySvg}
+      onDownloadSvg={handleDownloadSvg}
+    >
       {isBooting && <BootScreen onFinished={() => setIsBooting(false)} />}
 
       <input
@@ -362,6 +399,23 @@ function App() {
       {isPreferencesOpen && (
         <PreferencesModal onClose={() => setIsPreferencesOpen(false)} />
       )}
+
+      {/* Ctrl+K Command Palette */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onRunTrace={handleRunTrace}
+        onCopySvg={handleCopySvg}
+        onDownloadSvg={handleDownloadSvg}
+        onDownloadPng={handleDownloadPng}
+        onLoadPreset={(preset) => dispatch({ type: 'LOAD_PRESET', payload: preset })}
+        onUpdateSetting={(key, value) => dispatch({ type: 'UPDATE', payload: { [key]: value } })}
+        onOpenPreferences={() => setIsPreferencesOpen(true)}
+        onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
+        onClearImage={handleClearImage}
+        hasImage={!!originalImage}
+        hasSvg={!!svgOutput}
+      />
     </WindowFrame>
   );
 }

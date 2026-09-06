@@ -1,20 +1,31 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Copy, Maximize2, Minus, X } from 'lucide-react';
 import { KeyboardShortcutsBar } from './KeyboardShortcutsBar';
+import { TopNavIsland } from './TopNavIsland';
 import { getCurrentWindow, type Window } from '@tauri-apps/api/window';
 
 export function WindowFrame({ 
   children, 
   rightPanel, 
-  showShortcuts 
+  showShortcuts,
+  onOpenCommandPalette,
+  onOpenPreferences,
+  onToggleShortcuts,
+  hasSvg = false,
+  onCopySvg,
+  onDownloadSvg,
 }: { 
   children: React.ReactNode; 
   rightPanel?: React.ReactNode; 
   showShortcuts?: boolean;
+  onOpenCommandPalette?: () => void;
+  onOpenPreferences?: () => void;
+  onToggleShortcuts?: () => void;
+  hasSvg?: boolean;
+  onCopySvg?: () => void;
+  onDownloadSvg?: () => void;
 }) {
   const [appWindow, setAppWindow] = useState<Window | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Browser fallbacks for the window controls. Only meaningful in a top-level
   // browser tab (embedded webviews can react badly to the Fullscreen API).
@@ -53,39 +64,23 @@ export function WindowFrame({
     }
   }, [appWindow, isTopLevelBrowser]);
 
-  const fullscreen = useCallback(() => {
-    if (appWindow) {
-      appWindow.isFullscreen().then((fs) => {
-        appWindow.setFullscreen(!fs).catch((e) => console.warn('setFullscreen failed:', e));
-      }).catch((e) => console.warn('isFullscreen failed:', e));
-    } else if (isTopLevelBrowser()) {
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
-      } else {
-        document.documentElement.requestFullscreen?.().catch(() => {});
-      }
-    }
-  }, [appWindow, isTopLevelBrowser]);
-
   // Initialize window and track state
   useEffect(() => {
     let unlisten: (() => void) | undefined;
     let unlistenMoved: (() => void) | undefined;
 
     try {
-      if ('__TAURI_INTERNALS__' in window || '__TAURI__' in window) {
+      if (typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window) {
         const win = getCurrentWindow();
         // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time native window init
         setAppWindow(win);
 
         // Check initial state
         win.isMaximized().then(setIsMaximized).catch(() => {});
-        win.isFullscreen().then(setIsFullscreen).catch(() => {});
 
         // Single listener for all window state changes
         win.onResized(() => {
           win.isMaximized().then(setIsMaximized).catch(() => {});
-          win.isFullscreen().then(setIsFullscreen).catch(() => {});
         }).then((fn) => { unlisten = fn; }).catch((e) => console.warn('onResized failed:', e));
 
         // Keep the maximize/fullscreen icons in sync while dragging the window
@@ -98,14 +93,9 @@ export function WindowFrame({
       console.warn("Not running in Tauri environment");
     }
 
-    // Browser fallback: track fullscreen state so the icon stays in sync.
-    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener('fullscreenchange', onFsChange);
-
     return () => {
       unlisten?.();
       unlistenMoved?.();
-      document.removeEventListener('fullscreenchange', onFsChange);
     };
   }, []);
 
@@ -115,9 +105,24 @@ export function WindowFrame({
       data-tauri-drag-region
     >
       <div
-        className="absolute inset-2 rounded-[24px] flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] bg-white dark:bg-canvas-bg"
+        className="absolute inset-2 rounded-[24px] flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] bg-white dark:bg-canvas-bg border border-black/10 dark:border-white/10"
         style={{ animation: 'windowEnter 500ms cubic-bezier(0.34, 1.56, 0.64, 1)' }}
       >
+        {/* Ona & Swift Bloodline Title Bar */}
+        <TopNavIsland
+          onOpenCommandPalette={onOpenCommandPalette || (() => {})}
+          onOpenPreferences={onOpenPreferences || (() => {})}
+          onToggleShortcuts={onToggleShortcuts || (() => {})}
+          showShortcuts={!!showShortcuts}
+          hasSvg={hasSvg}
+          onCopySvg={onCopySvg}
+          onDownloadSvg={onDownloadSvg}
+          isMaximized={isMaximized}
+          onToggleMaximize={maximize}
+          onMinimize={minimize}
+          onClose={close}
+        />
+
         {/* Main content area */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Canvas Area */}
@@ -128,80 +133,6 @@ export function WindowFrame({
           {/* Right Settings Sidebar */}
           <div className="w-[30%] min-w-[280px] max-w-[340px] h-full bg-panel-bg dark:bg-panel-dark flex flex-col relative overflow-hidden border-l border-black/5 dark:border-white/5 transition-colors duration-200">
             <div className="absolute inset-0 bg-white/20 dark:bg-black/20 pointer-events-none" />
-            
-            {/* Titlebar / Drag Region */}
-            <div 
-              data-tauri-drag-region 
-              className="absolute top-0 inset-x-0 h-14 z-50 flex items-center justify-end px-3 pointer-events-none"
-            >
-              <div className="flex items-center bg-black/10 dark:bg-white/10 backdrop-blur-md rounded-full p-[2px] gap-[2px] pointer-events-auto border border-black/5 dark:border-white/10">
-                {/* Minimize Button */}
-                <button
-                  onClick={minimize}
-                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 dark:hover:bg-white/15 text-ink dark:text-white cursor-pointer transition-all group"
-                  title="Minimize"
-                >
-                  <Minus size={12} strokeWidth={3} className="group-hover:scale-110 transition-transform" />
-                </button>
-
-                {/* Maximize/Restore Button */}
-                <button
-                  onClick={maximize}
-                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 dark:hover:bg-white/15 text-ink dark:text-white cursor-pointer transition-all group"
-                  title={isMaximized ? "Restore" : "Maximize"}
-                >
-                  {isMaximized ? (
-                    <Copy size={10} strokeWidth={3} className="group-hover:scale-110 transition-transform" />
-                  ) : (
-                    <Maximize2 size={10} strokeWidth={3} className="group-hover:scale-110 transition-transform" />
-                  )}
-                </button>
-
-                {/* Fullscreen Button */}
-                <button
-                  onClick={fullscreen}
-                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 dark:hover:bg-white/15 text-ink dark:text-white cursor-pointer transition-all group"
-                  title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-                >
-                  <svg 
-                    width="10" 
-                    height="10" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="3" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    className="group-hover:scale-110 transition-transform"
-                  >
-                    {isFullscreen ? (
-                      <>
-                        <path d="M8 3v3a2 2 0 0 1-2 2H3" />
-                        <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
-                        <path d="M3 16h3a2 2 0 0 1 2 2v3" />
-                        <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
-                      </>
-                    ) : (
-                      <>
-                        <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-                        <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-                        <path d="M3 16v3a2 2 0 0 0 2 2h3" />
-                        <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
-                      </>
-                    )}
-                  </svg>
-                </button>
-
-                {/* Close Button */}
-                <button
-                  onClick={close}
-                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full bg-[#FF3B30] text-white hover:bg-[#FF3B30]/90 cursor-pointer transition-all group shadow-sm"
-                  title="Close"
-                >
-                  <X size={10} strokeWidth={2.5} className="transition-transform group-hover:scale-110" />
-                </button>
-              </div>
-            </div>
             
             <div className="absolute inset-0">
               {rightPanel}
