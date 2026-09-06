@@ -354,22 +354,24 @@ function App() {
 
       {!originalImage ? (
         <div
-          className="w-full h-full flex flex-col items-center justify-center"
+          className="w-full h-full flex flex-col items-center justify-center p-6"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
         >
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="w-[400px] h-[300px] border-2 border-dashed border-lime rounded-[20px] flex flex-col items-center justify-center hover:bg-lime/5 transition-colors duration-300 cursor-pointer group animate-breathe"
+            className="w-[420px] max-w-[90%] h-[300px] border border-dashed border-lime/40 hover:border-lime rounded-[28px] bg-black/[0.02] dark:bg-white/[0.02] hover:bg-lime/[0.03] dark:hover:bg-lime/[0.04] backdrop-blur-sm flex flex-col items-center justify-center transition-all duration-300 cursor-pointer group shadow-[0_10px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.2)] animate-breathe"
           >
-            <div className="w-20 h-20 mb-6 relative transition-transform duration-300 group-hover:scale-105">
-              <div className="absolute inset-0 bg-ink rounded-[12px] opacity-10 dark:opacity-25 translate-x-2 translate-y-2" />
-              <div className="absolute inset-0 border-[3px] border-lime rounded-[12px] flex items-center justify-center bg-canvas-bg shadow-sm">
+            <div className="w-18 h-18 mb-5 relative transition-transform duration-300 group-hover:scale-105">
+              <div className="absolute inset-0 bg-ink rounded-[18px] opacity-10 dark:opacity-20 translate-x-1.5 translate-y-1.5" />
+              <div className="absolute inset-0 border-2 border-lime/80 rounded-[18px] flex items-center justify-center bg-white dark:bg-[#1C1C20] shadow-md">
                 <span className="font-display font-bold text-2xl text-lime">R</span>
               </div>
             </div>
-            <h2 className="font-display font-bold text-[18px] text-ink mb-1">{t('drop.title')}</h2>
-            <p className="font-sans text-[12px] text-ink-muted font-medium">{t('drop.subtitle')}</p>
+            <h2 className="font-display font-bold text-[17px] text-ink dark:text-white mb-1.5 tracking-tight">{t('drop.title')}</h2>
+            <div className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-[11px] font-mono text-ink-muted dark:text-white/50">
+              {t('drop.subtitle')}
+            </div>
           </div>
         </div>
       ) : (

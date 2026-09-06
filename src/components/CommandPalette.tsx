@@ -324,9 +324,9 @@ export function CommandPalette({
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm command-palette-backdrop" />
 
-      {/* Palette Card — exact Ona Framer style */}
+      {/* Palette Card — Apple Mac style */}
       <div
-        className="relative w-full max-w-xl overflow-hidden bg-white dark:bg-[#18181c] border border-black/10 dark:border-white/10 rounded-[15px] shadow-[0_24px_80px_rgba(0,0,0,0.5)] command-palette-card z-10"
+        className="relative w-full max-w-xl overflow-hidden bg-white/95 dark:bg-[#161619]/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-[20px] shadow-[0_30px_90px_rgba(0,0,0,0.55)] command-palette-card z-10"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search header */}
@@ -367,7 +367,7 @@ export function CommandPalette({
                   data-selected={isSelected}
                   onMouseEnter={() => setSelectedIndex(i)}
                   onClick={() => cmd.perform()}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-left transition-colors cursor-pointer ${
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-left transition-colors cursor-pointer ${
                     isSelected 
                       ? 'bg-lime/15 dark:bg-lime/12 text-ink dark:text-white' 
                       : 'hover:bg-black/5 dark:hover:bg-white/5 text-ink/80 dark:text-white/80'

@@ -101,7 +101,11 @@ export function WindowFrame({
 
   return (
     <div
-      className="w-screen h-screen bg-white dark:bg-canvas-bg flex flex-col overflow-hidden select-none"
+      className={`w-screen h-screen flex flex-col select-none transition-all duration-200 ${
+        isMaximized 
+          ? 'rounded-none' 
+          : 'rounded-[16px] md:rounded-[18px] border border-black/10 dark:border-white/[0.08] shadow-[0_20px_60px_rgba(0,0,0,0.35)]'
+      } bg-white dark:bg-canvas-bg overflow-hidden`}
       data-tauri-drag-region
     >
       {/* Ona & Swift Bloodline Title Bar */}
