@@ -1,6 +1,7 @@
 import React from 'react';
 import { 
-  Command, Copy, Download, Keyboard, Settings, Check 
+  Command, Copy, Download, Keyboard, Settings, Check,
+  Minus, Square, X 
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -42,68 +43,17 @@ export function TopNavIsland({
 
   return (
     <header 
-      className="relative h-11 w-full flex items-center justify-between bg-white/80 dark:bg-[#141416]/90 border-b border-black/[0.06] dark:border-white/[0.08] backdrop-blur-md select-none flex-shrink-0 z-40 transition-colors" 
+      className="relative h-12 w-full flex items-center justify-between bg-white/80 dark:bg-[#141416]/90 border-b border-black/[0.07] dark:border-white/[0.08] backdrop-blur-md select-none flex-shrink-0 z-40 transition-colors" 
       data-tauri-drag-region
     >
-      {/* Left: Authentic Apple Mac Traffic Lights + Brand Mark */}
-      <div className="flex items-center gap-3 h-full pl-3.5 pr-4 select-none" data-tauri-drag-region>
-        {/* macOS Traffic Lights */}
-        <div className="flex items-center gap-2 group/traffic py-1 pr-1" data-tauri-drag-region>
-          {/* Close */}
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            title="Close"
-            className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E] flex items-center justify-center transition-all active:brightness-90 focus:outline-none cursor-pointer"
-          >
-            <svg viewBox="0 0 12 12" width="6" height="6" className="opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none">
-              <path d="M2.5 2.5L9.5 9.5M9.5 2.5L2.5 9.5" stroke="#4D0000" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          {/* Minimize */}
-          <button
-            type="button"
-            onClick={onMinimize}
-            aria-label="Minimize"
-            title="Minimize"
-            className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123] flex items-center justify-center transition-all active:brightness-90 focus:outline-none cursor-pointer"
-          >
-            <svg viewBox="0 0 12 12" width="6" height="6" className="opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none">
-              <line x1="2" y1="6" x2="10" y2="6" stroke="#5E3D00" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          {/* Maximize / Zoom */}
-          <button
-            type="button"
-            onClick={onToggleMaximize}
-            aria-label={isMaximized ? "Restore" : "Zoom"}
-            title={isMaximized ? "Restore" : "Zoom"}
-            className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29] flex items-center justify-center transition-all active:brightness-90 focus:outline-none cursor-pointer"
-          >
-            <svg viewBox="0 0 12 12" width="6" height="6" className="opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none">
-              {isMaximized ? (
-                <line x1="2" y1="6" x2="10" y2="6" stroke="#004D00" strokeWidth="1.8" strokeLinecap="round" />
-              ) : (
-                <path d="M2.5 6h7M6 2.5v7" stroke="#004D00" strokeWidth="1.8" strokeLinecap="round" />
-              )}
-            </svg>
-          </button>
+      {/* Left: Minimal, clean brand mark matching Ona's exact style */}
+      <div className="flex items-center gap-2 h-full px-4 select-none" data-tauri-drag-region>
+        <div className="h-5 w-auto text-ink dark:text-lime transition-colors">
+          <Logo />
         </div>
-
-        <span className="w-px h-3.5 bg-black/10 dark:bg-white/10" aria-hidden />
-
-        {/* Minimal clean brand mark */}
-        <div className="flex items-center gap-2 select-none" data-tauri-drag-region>
-          <div className="h-4 w-auto text-ink dark:text-lime transition-colors">
-            <Logo />
-          </div>
-          <span className="font-display font-bold text-[13px] tracking-tight text-ink dark:text-white">
-            revect
-          </span>
-        </div>
+        <span className="font-display font-bold text-[14px] tracking-tight text-ink dark:text-white">
+          revect
+        </span>
       </div>
 
       {/* Center: Ona-style centered floating options cluster */}
@@ -182,18 +132,35 @@ export function TopNavIsland({
         </button>
       </div>
 
-      {/* Right: Clean macOS drag region & subtle status */}
-      <div className="flex items-center h-full pr-4 select-none" data-tauri-drag-region>
-        {hasSvg ? (
-          <span className="text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-lime/15 text-lime-dark dark:text-lime border border-lime/20 flex items-center gap-1.5 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse" />
-            Vector Ready
-          </span>
-        ) : (
-          <span className="text-[11px] font-mono text-black/25 dark:text-white/25 tracking-wider select-none pointer-events-none">
-            v0.3.0
-          </span>
-        )}
+      {/* Right: Ona-style flush window control buttons */}
+      <div className="flex items-center h-full">
+        <button
+          type="button"
+          onClick={onMinimize}
+          className="w-11 h-full flex items-center justify-center text-ink-muted hover:text-ink dark:text-white/60 dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors focus:outline-none"
+          aria-label="Minimize"
+          title="Minimize"
+        >
+          <Minus className="w-3.5 h-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onToggleMaximize}
+          className="w-11 h-full flex items-center justify-center text-ink-muted hover:text-ink dark:text-white/60 dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors focus:outline-none"
+          aria-label="Maximize"
+          title={isMaximized ? "Restore" : "Maximize"}
+        >
+          <Square className="w-3 h-3" />
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-11 h-full flex items-center justify-center text-ink-muted hover:text-white dark:text-white/60 hover:bg-[#e81123] dark:hover:text-white transition-colors focus:outline-none"
+          aria-label="Close"
+          title="Close"
+        >
+          <X className="w-4 h-4" />
+        </button>
       </div>
     </header>
   );
