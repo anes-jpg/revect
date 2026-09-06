@@ -52,14 +52,14 @@ export function LayersPanel({ svgOutput, onSelectPath, selectedPathId, onSvgEdit
   if (!svgOutput || paths.length === 0) return null;
 
   return (
-    <div className="border-t border-black/10 mt-2 pt-2">
+    <div className="border-t border-black/10 dark:border-white/10 mt-2 pt-2">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-2 px-1 py-1.5 hover:bg-black/5 rounded-lg transition-colors"
+        className="w-full flex items-center gap-2 px-1 py-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
       >
-        {isExpanded ? <ChevronDown size={14} className="text-ink" /> : <ChevronRight size={14} className="text-ink" />}
-        <span className="font-sans font-bold text-[12px] text-ink">Layers</span>
-        <span className="font-mono text-[10px] text-ink-muted bg-black/10 px-1.5 rounded-full">{paths.length}</span>
+        {isExpanded ? <ChevronDown size={14} className="text-ink dark:text-white" /> : <ChevronRight size={14} className="text-ink dark:text-white" />}
+        <span className="font-sans font-bold text-[12px] text-ink dark:text-white">Layers</span>
+        <span className="font-mono text-[10px] text-ink-muted dark:text-white/70 bg-black/10 dark:bg-white/10 px-1.5 rounded-full">{paths.length}</span>
       </button>
 
       {isExpanded && (
@@ -75,23 +75,23 @@ export function LayersPanel({ svgOutput, onSelectPath, selectedPathId, onSvgEdit
               onClick={() => onSelectPath(path.id)}
               className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-all text-[11px] ${
                 selectedPathId === path.id
-                  ? 'bg-lime/20 border border-lime/30'
-                  : 'hover:bg-black/5 border border-transparent'
+                  ? 'bg-lime/20 dark:bg-lime/20 border border-lime/30 dark:border-lime/40'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
               }`}
             >
-              <GripVertical size={10} className="text-ink-muted/50 flex-shrink-0" />
-              <div className="w-3 h-3 rounded-sm border border-black/20 flex-shrink-0" style={{ backgroundColor: path.fill }} />
-              <span className="font-mono text-ink-muted flex-1 truncate">#{index + 1}</span>
+              <GripVertical size={10} className="text-ink-muted/50 dark:text-white/40 flex-shrink-0" />
+              <div className="w-3 h-3 rounded-sm border border-black/20 dark:border-white/20 flex-shrink-0" style={{ backgroundColor: path.fill }} />
+              <span className="font-mono text-ink-muted dark:text-white/70 flex-1 truncate">#{index + 1}</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleVisibility(path.id);
                 }}
-                className="w-5 h-5 flex items-center justify-center rounded hover:bg-black/10 transition-colors"
+                className="w-5 h-5 flex items-center justify-center rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
               >
                 {path.visible
-                  ? <Eye size={10} className="text-ink-muted" />
-                  : <EyeOff size={10} className="text-ink-muted/40" />
+                  ? <Eye size={10} className="text-ink-muted dark:text-white/70" />
+                  : <EyeOff size={10} className="text-ink-muted/40 dark:text-white/30" />
                 }
               </button>
             </div>

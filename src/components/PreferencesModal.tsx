@@ -36,28 +36,26 @@ export function PreferencesModal({ onClose }: PreferencesModalProps) {
               <Monitor size={12} /> {t('pref.appearance')}
             </h3>
             <div className="flex gap-2">
-              <button 
-                onClick={() => updatePreference('theme', 'system')}
-                className={`flex-1 py-2 rounded-[8px] font-bold text-[13px] transition-all ${preferences.theme === 'system' ? 'bg-ink/5 border-2 border-lime text-ink' : 'bg-canvas-bg hover:bg-ink/5 border border-ink/10 text-ink'}`}
-              >
-                {t('pref.system')}
-              </button>
-              <button 
-                onClick={() => updatePreference('theme', 'light')}
-                className={`flex-1 py-2 rounded-[8px] font-bold text-[13px] transition-all ${preferences.theme === 'light' ? 'bg-ink/5 border-2 border-lime text-ink' : 'bg-canvas-bg hover:bg-ink/5 border border-ink/10 text-ink'}`}
-              >
-                {t('pref.light')}
-              </button>
-              <button 
-                onClick={() => updatePreference('theme', 'dark')}
-                className={`flex-1 py-2 rounded-[8px] font-bold text-[13px] transition-all ${preferences.theme === 'dark' ? 'bg-ink/5 border-2 border-lime text-ink' : 'bg-[#2C2C2C] hover:bg-[#1A1A1A] border border-transparent text-white'}`}
-              >
-                {t('pref.dark')}
-              </button>
+              {(['system', 'light', 'dark'] as const).map((themeKey) => {
+                const isSelected = preferences.theme === themeKey;
+                return (
+                  <button 
+                    key={themeKey}
+                    onClick={() => updatePreference('theme', themeKey)}
+                    className={`flex-1 py-2 rounded-[8px] font-bold text-[13px] transition-all ${
+                      isSelected 
+                        ? 'bg-lime/20 dark:bg-lime/20 border-2 border-lime text-ink dark:text-white shadow-sm' 
+                        : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/10 text-ink-muted dark:text-white/70 hover:text-ink dark:hover:text-white'
+                    }`}
+                  >
+                    {t(`pref.${themeKey}`)}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="w-full h-px bg-ink/5" />
+          <div className="w-full h-px bg-ink/5 dark:bg-white/10" />
 
           {/* Section: Language */}
           <div className="flex flex-col gap-3">
@@ -65,22 +63,26 @@ export function PreferencesModal({ onClose }: PreferencesModalProps) {
               <Globe size={12} /> {t('pref.language')}
             </h3>
             <div className="flex gap-2">
-              <button 
-                onClick={() => updatePreference('language', 'en')}
-                className={`flex-1 py-2 rounded-[8px] font-bold text-[13px] transition-all ${preferences.language === 'en' ? 'bg-ink/5 border-2 border-lime text-ink' : 'bg-canvas-bg hover:bg-ink/5 border border-ink/10 text-ink'}`}
-              >
-                English
-              </button>
-              <button 
-                onClick={() => updatePreference('language', 'fr')}
-                className={`flex-1 py-2 rounded-[8px] font-bold text-[13px] transition-all ${preferences.language === 'fr' ? 'bg-ink/5 border-2 border-lime text-ink' : 'bg-canvas-bg hover:bg-ink/5 border border-ink/10 text-ink'}`}
-              >
-                Français
-              </button>
+              {(['en', 'fr'] as const).map((langKey) => {
+                const isSelected = preferences.language === langKey;
+                return (
+                  <button 
+                    key={langKey}
+                    onClick={() => updatePreference('language', langKey)}
+                    className={`flex-1 py-2 rounded-[8px] font-bold text-[13px] transition-all ${
+                      isSelected 
+                        ? 'bg-lime/20 dark:bg-lime/20 border-2 border-lime text-ink dark:text-white shadow-sm' 
+                        : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/10 text-ink-muted dark:text-white/70 hover:text-ink dark:hover:text-white'
+                    }`}
+                  >
+                    {langKey === 'en' ? 'English' : 'Français'}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="w-full h-px bg-ink/5" />
+          <div className="w-full h-px bg-ink/5 dark:bg-white/10" />
 
           {/* Section: Export */}
           <div className="flex flex-col gap-3">
@@ -90,7 +92,7 @@ export function PreferencesModal({ onClose }: PreferencesModalProps) {
             <select 
               value={preferences.exportPath}
               onChange={(e) => updatePreference('exportPath', e.target.value)}
-              className="w-full bg-ink/5 border-none rounded-[8px] px-3 py-2.5 text-[13px] font-bold text-ink cursor-pointer outline-none focus:ring-2 focus:ring-lime"
+              className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-[8px] px-3 py-2.5 text-[13px] font-bold text-ink dark:text-white cursor-pointer outline-none focus:ring-2 focus:ring-lime [&>option]:bg-white dark:[&>option]:bg-[#1E1E24] [&>option]:text-ink dark:[&>option]:text-white"
             >
               <option value="Ask every time">{t('pref.export.ask')}</option>
               <option value="~/Downloads/Revect">~/Downloads/Revect</option>
@@ -98,7 +100,7 @@ export function PreferencesModal({ onClose }: PreferencesModalProps) {
             </select>
           </div>
 
-          <div className="w-full h-px bg-ink/5" />
+          <div className="w-full h-px bg-ink/5 dark:bg-white/10" />
 
           {/* Section: Advanced */}
           <div className="flex flex-col gap-3">
@@ -112,7 +114,7 @@ export function PreferencesModal({ onClose }: PreferencesModalProps) {
               </div>
               <button 
                 onClick={() => updatePreference('hardwareAccel', !preferences.hardwareAccel)}
-                className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 ${preferences.hardwareAccel ? 'bg-lime-dark' : 'bg-ink/20'}`}
+                className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 ${preferences.hardwareAccel ? 'bg-lime-dark dark:bg-lime' : 'bg-black/20 dark:bg-white/20'}`}
               >
                 <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${preferences.hardwareAccel ? 'translate-x-4' : 'translate-x-0'}`} />
               </button>
@@ -125,7 +127,7 @@ export function PreferencesModal({ onClose }: PreferencesModalProps) {
         <div className="h-14 bg-ink/5 flex items-center justify-end px-5 border-t border-ink/5">
           <button 
             onClick={onClose}
-            className="px-6 py-1.5 bg-ink text-canvas-bg rounded-full font-bold text-[13px] hover:opacity-80 transition-opacity"
+            className="px-6 py-1.5 bg-ink text-canvas-bg dark:bg-lime dark:text-black dark:hover:bg-lime-dark rounded-full font-bold text-[13px] hover:opacity-90 transition-all shadow-sm"
           >
             {t('pref.done')}
           </button>

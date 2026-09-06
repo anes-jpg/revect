@@ -89,27 +89,27 @@ export function PathEditor({ pathId, svgOutput, onSvgEdit, onClose, onToast }: P
         transition: 'transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 150ms ease-out',
       }}
     >
-      <div className="mx-4 mb-4 bg-white/95 backdrop-blur-xl rounded-2xl border border-black/10 shadow-2xl p-4">
+      <div className="mx-4 mb-4 bg-white/95 dark:bg-[#1E1E24]/95 backdrop-blur-xl rounded-2xl border border-black/10 dark:border-white/10 shadow-2xl p-4">
         <div className="flex items-center gap-4 flex-wrap">
           {/* Path info */}
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[11px] font-bold text-ink bg-black/5 px-2 py-1 rounded-lg">{pathId}</span>
+            <span className="font-mono text-[11px] font-bold text-ink dark:text-white bg-black/5 dark:bg-white/10 px-2 py-1 rounded-lg border border-black/5 dark:border-white/10">{pathId}</span>
           </div>
 
           {/* Color swatch */}
           <div className="relative">
             <button
               onClick={() => setShowColorPicker(!showColorPicker)}
-              className="flex items-center gap-1.5 bg-black/5 hover:bg-black/10 px-3 py-1.5 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 px-3 py-1.5 rounded-lg transition-colors border border-black/5 dark:border-white/10"
             >
-              <div className="w-4 h-4 rounded border border-black/20" style={{ backgroundColor: fill }} />
-              <span className="font-mono text-[11px] text-ink">{fill}</span>
-              <Palette size={12} className="text-ink-muted" />
+              <div className="w-4 h-4 rounded border border-black/20 dark:border-white/20" style={{ backgroundColor: fill }} />
+              <span className="font-mono text-[11px] text-ink dark:text-white">{fill}</span>
+              <Palette size={12} className="text-ink-muted dark:text-white/60" />
             </button>
 
             {/* Color picker popover */}
             {showColorPicker && (
-              <div className="absolute bottom-full left-0 mb-2 bg-white rounded-xl shadow-2xl border border-black/10 p-3 w-[220px] z-50">
+              <div className="absolute bottom-full left-0 mb-2 bg-white dark:bg-[#222228] rounded-xl shadow-2xl border border-black/10 dark:border-white/10 p-3 w-[220px] z-50">
                 <input
                   type="color"
                   value={fill}
@@ -120,7 +120,7 @@ export function PathEditor({ pathId, svgOutput, onSvgEdit, onClose, onToast }: P
                   type="text"
                   value={fill}
                   onChange={e => handleColorChange(e.target.value)}
-                  className="w-full mt-2 px-3 py-1.5 bg-black/5 rounded-lg text-[12px] font-mono text-ink border-0 outline-none focus:ring-2 ring-lime"
+                  className="w-full mt-2 px-3 py-1.5 bg-black/5 dark:bg-white/10 rounded-lg text-[12px] font-mono text-ink dark:text-white border border-black/5 dark:border-white/10 outline-none focus:ring-2 ring-lime"
                 />
               </div>
             )}
@@ -128,19 +128,19 @@ export function PathEditor({ pathId, svgOutput, onSvgEdit, onClose, onToast }: P
 
           {/* Opacity */}
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-ink-muted">Opacity</span>
+            <span className="text-[11px] font-semibold text-ink-muted dark:text-white/70">Opacity</span>
             <input
               type="range"
               min={0} max={100}
               value={opacity}
               onChange={e => handleOpacityChange(parseInt(e.target.value))}
-              className="w-20 h-1 bg-black/10 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-lime [&::-webkit-slider-thumb]:rounded-full"
+              className="w-20 h-1 bg-black/10 dark:bg-white/20 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-lime [&::-webkit-slider-thumb]:rounded-full"
             />
-            <span className="font-mono text-[10px] text-ink-muted w-8">{opacity}%</span>
+            <span className="font-mono text-[10px] text-ink-muted dark:text-white/60 w-8">{opacity}%</span>
           </div>
 
           {/* Points */}
-          <span className="text-[11px] text-ink-muted font-mono">Points: {pointCount}</span>
+          <span className="text-[11px] text-ink-muted dark:text-white/60 font-mono">Points: {pointCount}</span>
 
           {/* Spacer */}
           <div className="flex-1" />
@@ -149,21 +149,21 @@ export function PathEditor({ pathId, svgOutput, onSvgEdit, onClose, onToast }: P
           <div className="flex items-center gap-1">
             <button
               onClick={handleDuplicate}
-              className="flex items-center gap-1 px-3 py-1.5 bg-black/5 hover:bg-lime/20 rounded-lg transition-colors text-[11px] font-bold text-ink"
+              className="flex items-center gap-1 px-3 py-1.5 bg-black/5 dark:bg-white/10 hover:bg-lime/20 dark:hover:bg-lime/20 rounded-lg transition-colors text-[11px] font-bold text-ink dark:text-white border border-black/5 dark:border-white/10"
             >
               <Copy size={12} /> Duplicate
             </button>
             <button
               onClick={handleDelete}
-              className="flex items-center gap-1 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors text-[11px] font-bold text-red-600"
+              className="flex items-center gap-1 px-3 py-1.5 bg-red-500/10 dark:bg-red-500/20 hover:bg-red-500/20 dark:hover:bg-red-500/30 rounded-lg transition-colors text-[11px] font-bold text-red-600 dark:text-red-400 border border-red-500/20"
             >
               <Trash2 size={12} /> Delete
             </button>
             <button
               onClick={handleClose}
-              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors"
+              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
             >
-              <X size={14} className="text-ink-muted" />
+              <X size={14} className="text-ink-muted dark:text-white/60" />
             </button>
           </div>
         </div>

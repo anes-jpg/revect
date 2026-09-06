@@ -114,15 +114,15 @@ export function CanvasPanel({ originalImage, svgOutput, isTracing, onSelectPath,
       <div className="absolute top-4 inset-x-0 flex justify-center z-20 pointer-events-none">
         <div className="flex items-center gap-2 pointer-events-auto">
           {/* View Tabs */}
-          <div className="flex bg-black/5 backdrop-blur-md p-1 rounded-full border border-black/5 shadow-sm">
+          <div className="flex bg-white/80 dark:bg-[#1E1E24]/80 backdrop-blur-md p-1 rounded-full border border-black/5 dark:border-white/10 shadow-sm">
             {(['original', 'vector', 'split'] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-1.5 text-[12px] font-bold rounded-full capitalize transition-all duration-200 ${
                   activeTab === tab
-                    ? 'bg-white text-ink shadow-sm'
-                    : 'text-ink-muted hover:text-ink'
+                    ? 'bg-white dark:bg-white/20 text-ink dark:text-white shadow-sm'
+                    : 'text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white'
                 }`}
               >
                 {tab === 'split' ? 'Split' : tab === 'original' ? 'Original' : 'Vector'}
@@ -131,21 +131,21 @@ export function CanvasPanel({ originalImage, svgOutput, isTracing, onSelectPath,
           </div>
 
           {/* Toolbar */}
-          <div className="flex items-center bg-black/5 backdrop-blur-md p-1 rounded-full border border-black/5 shadow-sm gap-0.5">
-            <button onClick={handleZoomIn} className="w-8 h-8 flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white rounded-full transition-all" title="Zoom In">
+          <div className="flex items-center bg-white/80 dark:bg-[#1E1E24]/80 backdrop-blur-md p-1 rounded-full border border-black/5 dark:border-white/10 shadow-sm gap-0.5">
+            <button onClick={handleZoomIn} className="w-8 h-8 flex items-center justify-center text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/15 rounded-full transition-all" title="Zoom In">
               <ZoomIn size={14} />
             </button>
-            <div className="font-mono text-[10px] text-ink-muted min-w-[36px] text-center select-none">
+            <div className="font-mono text-[10px] text-ink-muted dark:text-white/60 min-w-[36px] text-center select-none">
               {zoomPercent}%
             </div>
-            <button onClick={handleZoomOut} className="w-8 h-8 flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white rounded-full transition-all" title="Zoom Out">
+            <button onClick={handleZoomOut} className="w-8 h-8 flex items-center justify-center text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/15 rounded-full transition-all" title="Zoom Out">
               <ZoomOut size={14} />
             </button>
-            <div className="w-px h-4 bg-black/10 mx-0.5" />
-            <button onClick={handleFit} className="w-8 h-8 flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white rounded-full transition-all" title="Fit to View">
+            <div className="w-px h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
+            <button onClick={handleFit} className="w-8 h-8 flex items-center justify-center text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/15 rounded-full transition-all" title="Fit to View">
               <Maximize size={14} />
             </button>
-            <button onClick={handleRotate} className="w-8 h-8 flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white rounded-full transition-all" title="Rotate 90°">
+            <button onClick={handleRotate} className="w-8 h-8 flex items-center justify-center text-ink-muted dark:text-white/60 hover:text-ink dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/15 rounded-full transition-all" title="Rotate 90°">
               <RotateCw size={14} />
             </button>
           </div>
@@ -164,7 +164,7 @@ export function CanvasPanel({ originalImage, svgOutput, isTracing, onSelectPath,
       >
         {/* Checkerboard */}
         <div
-          className="absolute inset-0 z-0 opacity-10"
+          className="absolute inset-0 z-0 opacity-10 dark:opacity-[0.03]"
           style={{
             backgroundImage: `repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #fff 25%, #fff 75%, #000 75%, #000)`,
             backgroundPosition: `0 0, 10px 10px`,
@@ -228,20 +228,20 @@ export function CanvasPanel({ originalImage, svgOutput, isTracing, onSelectPath,
               (e.target as HTMLElement).setPointerCapture(e.pointerId);
             }}
           >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-10 bg-white rounded-full border-2 border-lime flex items-center justify-center gap-0.5 shadow-md transition-transform group-hover:scale-110">
-              <span className="text-[8px] text-lime-dark font-bold select-none">◀▶</span>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-10 bg-white dark:bg-[#1E1E24] rounded-full border-2 border-lime flex items-center justify-center gap-0.5 shadow-md transition-transform group-hover:scale-110">
+              <span className="text-[8px] text-lime-dark dark:text-lime font-bold select-none">◀▶</span>
             </div>
           </div>
         )}
 
         {/* Loading Overlay */}
         {isTracing && (
-          <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-30 flex items-center justify-center transition-all duration-300">
-            <div className="bg-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-4">
+          <div className="absolute inset-0 bg-white/50 dark:bg-black/60 backdrop-blur-sm z-30 flex items-center justify-center transition-all duration-300">
+            <div className="bg-white dark:bg-[#1E1E24] border border-black/5 dark:border-white/10 px-6 py-4 rounded-2xl shadow-xl flex items-center gap-4">
               <svg width="24" height="24" viewBox="0 0 24 24" className="animate-spin">
                 <circle cx="12" cy="12" r="10" fill="none" stroke="#8AE25A" strokeWidth="3" strokeDasharray="50 15" strokeLinecap="round" />
               </svg>
-              <span className="font-display font-bold text-ink">Tracing…</span>
+              <span className="font-display font-bold text-ink dark:text-white">Tracing…</span>
             </div>
           </div>
         )}

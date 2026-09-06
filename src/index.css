@@ -10,7 +10,7 @@
   
   --canvas-bg: #FFFFFF;
   --panel-bg: #8AE25A;
-  --panel-dark: #2C2C2C;
+  --panel-dark: #222226;
   
   --ink: #111111;
   --ink-muted: #555555;
@@ -18,14 +18,24 @@
   --red-close: #FF5F57;
   --yellow-min: #FFBD2E;
   --green-max: #28CA41;
+
+  color-scheme: light;
 }
 
 .dark {
-  --canvas-bg: #1A1A1A;
-  --panel-dark: #2C2C2C;
+  --lime: #8AE25A;
+  --lime-dark: #5FBF2A;
+  --lime-muted: #2E4B1F;
+  --lime-glow: rgba(138, 226, 90, 0.25);
+
+  --canvas-bg: #141416;
+  --panel-bg: #222226;
+  --panel-dark: #222226;
   
-  --ink: #FFFFFF;
-  --ink-muted: #A0A0A0;
+  --ink: #F5F5F7;
+  --ink-muted: #9E9EA8;
+
+  color-scheme: dark;
 }
 
 html, body, #root {
@@ -103,7 +113,8 @@ body {
   position: fixed;
   inset: 8px; /* matches WindowFrame's m-2 margin around the content */
   border-radius: 24px;
-  background: #ffffff;
+  background: var(--canvas-bg);
+  color: var(--ink);
   z-index: 999;
   display: flex;
   flex-direction: column;
@@ -123,9 +134,9 @@ body {
   width: 112px;
   height: 112px;
   border-radius: 20px;
-  background: #ffffff;
+  background: var(--canvas-bg);
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(17, 17, 17, 0.12);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
   animation: boot-tile-in 550ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 @keyframes boot-tile-in {

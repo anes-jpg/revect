@@ -115,30 +115,30 @@ export function WindowFrame({
       data-tauri-drag-region
     >
       <div
-        className="absolute inset-2 rounded-[24px] flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] bg-white"
+        className="absolute inset-2 rounded-[24px] flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] bg-white dark:bg-canvas-bg"
         style={{ animation: 'windowEnter 500ms cubic-bezier(0.34, 1.56, 0.64, 1)' }}
       >
         {/* Main content area */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Canvas Area */}
-          <div className="flex-1 h-full relative bg-white">
+          <div className="flex-1 h-full relative bg-white dark:bg-canvas-bg">
             {children}
           </div>
 
           {/* Right Settings Sidebar */}
-          <div className="w-[30%] min-w-[280px] max-w-[340px] h-full bg-lime flex flex-col relative overflow-hidden">
-            <div className="absolute inset-0 bg-white/20 pointer-events-none" />
+          <div className="w-[30%] min-w-[280px] max-w-[340px] h-full bg-panel-bg dark:bg-panel-dark flex flex-col relative overflow-hidden border-l border-black/5 dark:border-white/5 transition-colors duration-200">
+            <div className="absolute inset-0 bg-white/20 dark:bg-black/20 pointer-events-none" />
             
             {/* Titlebar / Drag Region */}
             <div 
               data-tauri-drag-region 
               className="absolute top-0 inset-x-0 h-14 z-50 flex items-center justify-end px-3 pointer-events-none"
             >
-              <div className="flex items-center bg-black/10 backdrop-blur-md rounded-full p-[2px] gap-[2px] pointer-events-auto">
+              <div className="flex items-center bg-black/10 dark:bg-white/10 backdrop-blur-md rounded-full p-[2px] gap-[2px] pointer-events-auto border border-black/5 dark:border-white/10">
                 {/* Minimize Button */}
                 <button
                   onClick={minimize}
-                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 text-ink cursor-pointer transition-all group"
+                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 dark:hover:bg-white/15 text-ink dark:text-white cursor-pointer transition-all group"
                   title="Minimize"
                 >
                   <Minus size={12} strokeWidth={3} className="group-hover:scale-110 transition-transform" />
@@ -147,7 +147,7 @@ export function WindowFrame({
                 {/* Maximize/Restore Button */}
                 <button
                   onClick={maximize}
-                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 text-ink cursor-pointer transition-all group"
+                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 dark:hover:bg-white/15 text-ink dark:text-white cursor-pointer transition-all group"
                   title={isMaximized ? "Restore" : "Maximize"}
                 >
                   {isMaximized ? (
@@ -160,7 +160,7 @@ export function WindowFrame({
                 {/* Fullscreen Button */}
                 <button
                   onClick={fullscreen}
-                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 text-ink cursor-pointer transition-all group"
+                  className="flex items-center justify-center w-[22px] h-[22px] rounded-full hover:bg-black/10 dark:hover:bg-white/15 text-ink dark:text-white cursor-pointer transition-all group"
                   title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
                 >
                   <svg 

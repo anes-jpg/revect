@@ -326,7 +326,7 @@ function App() {
             className="w-[400px] h-[300px] border-2 border-dashed border-lime rounded-[20px] flex flex-col items-center justify-center hover:bg-lime/5 transition-colors duration-300 cursor-pointer group animate-breathe"
           >
             <div className="w-20 h-20 mb-6 relative transition-transform duration-300 group-hover:scale-105">
-              <div className="absolute inset-0 bg-ink rounded-[12px] opacity-10 translate-x-2 translate-y-2" />
+              <div className="absolute inset-0 bg-ink rounded-[12px] opacity-10 dark:opacity-25 translate-x-2 translate-y-2" />
               <div className="absolute inset-0 border-[3px] border-lime rounded-[12px] flex items-center justify-center bg-canvas-bg shadow-sm">
                 <span className="font-display font-bold text-2xl text-lime">R</span>
               </div>
